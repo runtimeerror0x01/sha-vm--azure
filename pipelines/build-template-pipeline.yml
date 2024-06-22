@@ -1,0 +1,61 @@
+trigger:
+- none
+
+variables:
+  azureServiceConnection: 'myServicePrincipalName1'
+  packerTemplateFolder: 'image/linux'
+
+
+stages:
+- stage: BuildImage
+  jobs:
+  - job: BuildLinuxImage
+    displayName: 'Build Linux Image with Packer'
+    pool:
+      vmImage: 'ubuntu-latest'
+    steps:
+    - task: UsePacker@0
+      inputs:
+        versionSpec: $(packerVersion)
+        checkLatest: true
+
+    - script: |
+        packer version
+      displayName: 'Check Packer Version'
+
+    # - script: |
+    #     packer build \
+    #       -var 'client_id=$(ARM_CLIENT_ID)' \
+    #       -var 'client_secret=$(ARM_CLIENT_SECRET)' \
+    #       -var 'subscription_id=$(ARM_SUBSCRIPTION_ID)' \
+    #       -var 'tenant_id=$(ARM_TENANT_ID)' \
+    #       -var 'resource_group=your-resource-group' \
+    #       -var 'location=your-location' \
+    #       -var 'image_gallery_name=your-gallery-name' \
+    #       -var 'image_definition_name=your-image-definition-name' \
+    #       -var 'image_version=1.0.0' \
+    #       $(packerTemplate)
+    #   displayName: 'Build Image with Packer'
+    #   env:
+    #     ARM_CLIENT_ID: $(azureServiceConnection.clientId)
+    #     ARM_CLIENT_SECRET: $(azureServiceConnection.clientSecret)
+    #     ARM_SUBSCRIPTION_ID: $(azureServiceConnection.subscriptionId)
+    #     ARM_TENANT_ID: $(azureServiceConnection.tenantId)
+
+    - task: AzureCLI@2
+      name: BuildLinuxImage
+      displayName: 'Build Image with Packer'
+      inputs:
+        azureSubscription: $(azureServiceConnection)
+        scriptType: pscore
+        scriptLocation: inlineScript
+        inlineScript: |
+                cd $(packerTemplateFolder)
+                packer init .
+                packer build -var "client_id=$()" -var "client_secret=$()" \
+                             -var "subscription_id=$()" -var "tenant_id=$()" .
+      env:
+        ARM_CLIENT_ID: $()
+        ARM_CLIENT_SECRET: $()
+        ARM_SUBSCRIPTION_ID: $()
+        ARM_TENANT_ID: $()

@@ -1,0 +1,8 @@
+location                      = "uksouth"
+virtual_network_name          = "vnet-chs-gitops-shared-weu-001"
+virtual_network_rg            = "rg-chs-gitops-shared-weu-sharedservices"
+subnet_name                   = "snet-chs-gitops-shared-weu-aci"
+managed_identity_name         = "gitops-vm-identity"
+keyvault_name                 = "gitops_vm_kv"
+ssh_key_name                  = "adminuser-ssh-private-key"
+vmSku                         = "Standard_D2_v4"
