@@ -150,15 +150,15 @@ module "linux_vm" {
   source = "Azure/avm-res-compute-virtualmachine/azurerm"
   version = "0.15.0"
 
+  name                               = var.vm_name
+  location                           = data.azurerm_resource_group.agent_rg.location
+  resource_group_name                = data.azurerm_resource_group.agent_rg.name
   admin_username                     = var.admin_username
   admin_password                     =  random_password.admin_password.result
   disable_password_authentication    = false
   enable_telemetry                   = false
   encryption_at_host_enabled         = false
   generate_admin_password_or_ssh_key = true
-  location                           = data.azurerm_resource_group.agent_rg.location
-  name                               = var.vm_name
-  resource_group_name                = data.azurerm_resource_group.agent_rg.name
   os_type                            = "Linux"
   size                               = var.vmSku          
   source_image_id                    = var.source_image_id
