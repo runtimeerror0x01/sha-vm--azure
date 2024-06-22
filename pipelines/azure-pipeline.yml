@@ -19,16 +19,6 @@ parameters:
 - name: Create_Backend_Storage
   type: boolean
   default: false  
-- name: agentcount
-  displayName: Instences
-  type: number
-  default: 1
-  # values:
-  #   - 1
-  #   - 2
-  #   - 3
-  #   - 4
-  #   - 5
 
 variables:
   - group: vmSecrets
@@ -250,11 +240,10 @@ stages:
         workingDirectory: '$(System.DefaultWorkingDirectory)/terraform'
         environmentServiceName: '${{ variables.backend_service_connection_name }}'
         commandOptions: |
+             -var-file="$(System.DefaultWorkingDirectory)/terraform/main.variables.tfvars" -auto-approve
              -var "resource_group_name=$(RG_NAME)"
              -var "admin_username=$(VMUSER)"        
              -var "source_image_id=$(imageId)"
-             -var "count=${{ parameters.agentcount }}" 
-             -var-file="$(System.DefaultWorkingDirectory)/terraform/main.variables.tfvars" -auto-approve
         allowTelemetryCollection: true
         publishPlanResults: 'Terraform Plan'
 
