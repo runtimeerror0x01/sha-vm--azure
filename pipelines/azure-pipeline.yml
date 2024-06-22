@@ -222,7 +222,7 @@ stages:
       displayName: "Publish > Checkov scan results"
 
 - stage: terraform_plan
-  dependsOn: validate_lint_checkov
+  # dependsOn: validate_lint_checkov
   condition: and(not(failed()), not(canceled()), eq('${{ parameters.DESTROY_TF }}', 'false'))
   displayName: TF plan
   jobs:
