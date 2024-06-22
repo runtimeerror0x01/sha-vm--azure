@@ -1,0 +1,40 @@
+--- 
+
+- name: Manage svc.sh script
+  hosts: localhost
+  become: true
+  tasks:
+    - name: update password
+      user:
+        name: "{{ adminUsername }}"
+        update_password: always
+        password: "{{ adminPassword | password_hash('sha512') }}"
+
+    - name: Check if svc.sh is installed
+      shell: ./svc.sh status
+      args:
+        chdir: /home/adminuser/azp
+      register: svc_status
+      ignore_errors: yes
+
+    - name: Install the service if not installed
+      shell: ./svc.sh install
+      args:
+        chdir: /home/adminuser/azp
+      when: "'not installed' in svc_status.stdout"
+
+    - name: Start the service if not running
+      shell: ./svc.sh start
+      args:
+        chdir: /home/adminuser/azp
+      when: "'not installed' in svc_status.stdout or 'not running' in svc_status.stdout or 'stopped' in svc_status.stdout"
+  
+
+
+
+# - name: Run svc.sh script
+#   hosts: localhost
+#   tasks:
+#     - name: Install and start the service
+#       become: true
+#       shell: cd /home/adminuser/azp && ./svc.sh install && ./svc.sh start
