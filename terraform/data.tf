@@ -39,7 +39,7 @@ data "azurerm_virtual_network" "spoke_vnet" {
 }
 
 data "azurerm_subnet" "spoke_subnet" {
-  name                 = var.
+  name                 = var.subnet_name
   virtual_network_name = azurerm_virtual_network.spoke_vnet.name
 }
 
