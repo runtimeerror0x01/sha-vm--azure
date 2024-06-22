@@ -309,11 +309,10 @@ stages:
         workingDirectory: '$(System.DefaultWorkingDirectory)/terraform'
         environmentServiceName: '${{ variables.backend_service_connection_name }}'
         commandOptions: |
-             -var "resource_group_name=$(RG_NAME)"
-             -var "admin_username=$(VMUSER)"     
-             -var "source_image_id=$(imageId)"  
-             -var "count=${{ parameters.agentcount }}" 
              -var-file="$(System.DefaultWorkingDirectory)/terraform/main.variables.tfvars" -auto-approve
+             -var "resource_group_name=$(RG_NAME)"
+             -var "admin_username=$(VMUSER)"        
+             -var "source_image_id=$(imageId)"
         allowTelemetryCollection: false
     
  
