@@ -35,9 +35,9 @@ build {
    sources = [
       "source.azure-arm.ubuntu-22_4-test",
    ]
-   # provisioner "shell" {
-   #    script = "image/scripts/01_ubuntu_packages.sh"
-   # }
+   provisioner "shell" {
+      script = "image/scripts/01_ubuntu_packages.sh"
+   }
    # provisioner "shell" {
    #    script = "image/scripts/02_ubuntu_docker.sh"
    # }
