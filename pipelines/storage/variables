@@ -1,0 +1,14 @@
+variables:
+  backend_service_connection_name: mysp001-ado
+  backend_container_name: azadoagent
+  backend_subscription_name: GIS-Core Hub Services-GitOps-Shared
+  backend_subscription_id: 8fa1cef9-cd55-4d84-9db8-b96d07935dee ## backendAzureRmSubscriptionId
+  backend_resource_group_name: rg-chs-gitops-shared-weu-TFStates ## backendAzureRmResourceGroupName
+  backend_storage_account_name: azadoagenttfstates ## 'backendAzureRmStorageAccountName'
+  # backend_storage_gitops_agent_vnet: vnet-chs-gitops-shared-neu-001
+  # backend_storage_gitops_agent_subnet: snet-chs-gitops-shared-neu-agents
+  backend_storage_container_name: main
+  backend_tfstate_file_name: azadogent.tfstate
+  target_subscription_id: 8fa1cef9-cd55-4d84-9db8-b96d07935dee
+  target_tfvars: variables.tfvars
+  notify_email: Niaz.Khwaja@computacenter.com   

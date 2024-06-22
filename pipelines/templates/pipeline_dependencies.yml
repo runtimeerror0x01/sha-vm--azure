@@ -1,0 +1,67 @@
+jobs:
+  - job: install_pipeline_dependencies
+    continueOnError: false
+    steps:
+      - task: CmdLine@2
+        name: install_applications
+        displayName: "install_applications"
+        inputs:
+          workingDirectory: "$(ROOT_PATH)"
+          script: |
+            echo $USER
+            lsb_release -a
+            sudo apt-mark showhold
+            
+            echo -e "\n##[command]Installing unzip:"
+            sudo apt-get install unzip -y
+
+            echo -e "\n##[command]Verifying AzCLI installation:"
+            az version
+            if [ $? -ne 0 ]; then
+              set -x
+              echo -e "\n##[command]AzCLI was not found. Installing AzCLI..."
+              echo -e "\n##[command]Installing AzCLI dependencies:"
+              sudo apt-get update
+              sudo apt-get install ca-certificates curl apt-transport-https lsb-release gnupg -y
+              echo -e "\n##[command]Downloading and installing the Microsoft signing key:"
+              sudo mkdir -p /etc/apt/keyrings
+              curl --silent --location --show-error https://packages.microsoft.com/keys/microsoft.asc | gpg --dearmor | sudo tee /etc/apt/keyrings/microsoft.gpg > /dev/null
+              sudo chmod go+r /etc/apt/keyrings/microsoft.gpg
+              echo -e "\n##[command]Adding the Azure CLI software repository:"
+              AZ_REPO=$(lsb_release -cs)
+              echo "deb [arch=`dpkg --print-architecture` signed-by=/etc/apt/keyrings/microsoft.gpg] https://packages.microsoft.com/repos/azure-cli/ $AZ_REPO main" | sudo tee /etc/apt/sources.list.d/azure-cli.list
+              echo -e "\n##[command]Installing azure-cli package:"
+              sudo apt-get update
+              sudo apt-get install azure-cli -y
+              echo -e "\n##[command]Verifying AzCLI installation:"
+              az version
+            else
+              echo -e "\n##[command]AzCLI is already installed, skipping."
+            fi
+
+             echo -e "\n##[command]Verifying TFLint installation:"
+             tflint --version
+             if [ $? -ne 0 ]; then
+                echo -e "\n##[command]Installing TFLint:"
+                curl -s https://raw.githubusercontent.com/terraform-linters/tflint/master/install_linux.sh | bash
+             else
+                echo -e "##[command]TFLint is already installed, skipping."
+             fi
+             
+             # Check if Packer is already installed
+              if ! command -v packer &> /dev/null
+              then
+                  # Packer is not installed, so install it
+                  echo "Packer is not installed. Installing..."
+                  sudo apt-get update
+                  sudo apt-get install -y unzip
+                  curl -o packer.zip https://releases.hashicorp.com/packer/1.7.7/packer_1.7.7_linux_amd64.zip
+                  unzip packer.zip
+                  sudo mv packer /usr/local/bin/packer
+                  echo "Packer installed successfully."
+              else
+                  # Packer is already installed
+                  echo "Packer is already installed."
+              fi         
+
+
