@@ -232,12 +232,6 @@ stages:
       inputs:
         command: 'init'
         workingDirectory: '$(System.DefaultWorkingDirectory)/terraform'
-        commandOptions: |
-             -var "resource_group_name=$(RG_NAME)"
-             -var "admin_username=$(VMUSER)"        
-             -var "source_image_id=$(imageId)"
-             -var "count=${{ parameters.agentcount }}" 
-             -var-file="$(System.DefaultWorkingDirectory)/terraform/main.variables.tfvars" -auto-approve
         backendType: 'azurerm'
         backendServiceArm: ${{ variables.backend_service_connection_name }}
         backendAzureRmSubscriptionId: ${{ variables.backend_subscription_id }}
@@ -255,7 +249,12 @@ stages:
         command: 'plan'
         workingDirectory: '$(System.DefaultWorkingDirectory)/terraform'
         environmentServiceName: '${{ variables.backend_service_connection_name }}'
-        commandOptions: '-out=./terraform.tfplan -var-file="$(System.DefaultWorkingDirectory)/terraform/$.tfvars"'
+        commandOptions: |
+             -var "resource_group_name=$(RG_NAME)"
+             -var "admin_username=$(VMUSER)"        
+             -var "source_image_id=$(imageId)"
+             -var "count=${{ parameters.agentcount }}" 
+             -var-file="$(System.DefaultWorkingDirectory)/terraform/main.variables.tfvars" -auto-approve
         allowTelemetryCollection: true
         publishPlanResults: 'Terraform Plan'
 
