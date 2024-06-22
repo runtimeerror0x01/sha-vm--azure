@@ -18,9 +18,5 @@ locals {
     version   = "latest"                               # Replace with the version of your custom image
   }
 
-  vm_names = [
-    for i in range(1, var.vm_count + 1) : format("%s-%02d", var.vm_name, i)
-  ]
-
 }
 

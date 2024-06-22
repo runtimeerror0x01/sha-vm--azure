@@ -54,11 +54,6 @@ variable "source_image_id" {
   description = "Name of the Custom Image to use."
 }
 
-variable "count" {
-  type        = string
-  description = "Number of VM's to deploy. "
-}
-
 variable "vmSku" {
   type        = string
   description = "Size of the VM "
