@@ -31,7 +31,7 @@ parameters:
   #   - 5
 
 variables:
-  - group: vmssSecrets
+  - group: vmSecrets
   - template: ${{ parameters['PIPELINE_VARIABLES_PATH'] }}/variables.yaml@self 
 
 pool:
