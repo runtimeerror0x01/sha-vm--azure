@@ -38,6 +38,15 @@ pool:
   vmImage: 'ubuntu-latest'
 
 stages:
+- stage: Install_Pipeline_Dependencies
+  displayName: 'Install Pipeline Dependencies'
+  condition: and(not(failed()), not(canceled()))
+  variables:
+  - name: ROOT_PATH
+    value: '$(System.DefaultWorkingDirectory)'
+  jobs: 
+  - template: templates/pipeline_dependencies.yaml
+
 - stage: "Create_Backend_Storage"
   condition: eq('${{ parameters.Create_Backend_Storage }}', 'true')
   displayName: "Create Backend Storage"
@@ -57,15 +66,6 @@ stages:
           az account set --subscription ${{ variables.backend_subscription_id }}
           az storage account create --name ${{ variables.backend_storage_account_name }} --resource-group ${{ variables.backend_resource_group_name }} --encryption-services blob --default-action Allow --kind StorageV2
           az storage container create --name ${{variables.backend_storage_container_name }} --account-name ${{ variables.backend_storage_account_name }}
-
-- stage: Install_Pipeline_Dependencies
-  displayName: 'Install Pipeline Dependencies'
-  condition: and(not(failed()), not(canceled()))
-  variables:
-  - name: ROOT_PATH
-    value: '$(System.DefaultWorkingDirectory)'
-  jobs: 
-  - template: templates/pipeline_dependencies.yaml
 
 - stage: BuildImage
   displayName: 'Build Linux Image'
