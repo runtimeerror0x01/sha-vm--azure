@@ -239,11 +239,7 @@ stages:
         command: 'plan'
         workingDirectory: '$(System.DefaultWorkingDirectory)/terraform'
         environmentServiceName: '${{ variables.backend_service_connection_name }}'
-        commandOptions: |
-             -var-file="$(System.DefaultWorkingDirectory)/terraform/main.variables.tfvars"
-             -var "resource_group_name=$(RG_NAME)"
-             -var "admin_username=$(VMUSER)"        
-             -var "source_image_id=$(imageId)"
+        commandOptions: -var-file="$(System.DefaultWorkingDirectory)/terraform/main.variables.tfvars"
         allowTelemetryCollection: true
         publishPlanResults: 'Terraform Plan'
 
