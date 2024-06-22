@@ -108,13 +108,30 @@ resource "tls_private_key" "this" {
 
 resource "azurerm_key_vault_secret" "admin_ssh_key" {
   key_vault_id = module.avm_res_keyvault_vault.resource_id
-  name         = 
+  name         = "${var.vm_name}-ssh-key"
   value        = tls_private_key.this.private_key_pem
 
   depends_on = [
     module.avm_res_keyvault_vault
   ]
 }
+
+resource "random_password" "admin_password" {
+  length           = 16
+  special          = true
+  override_special = "_%@"
+}
+
+resource "azurerm_key_vault_secret" "admin_password" {
+  name         = "${var.vm_name}-password"
+  value        = random_password.admin_password.result
+  key_vault_id = module.avm_res_keyvault_vault.resource_id
+
+  depends_on = [
+    module.avm_res_keyvault_vault
+  ]
+}
+
 
 # resource "azurerm_disk_encryption_set" "this" {
 #   key_vault_key_id    = module.avm_res_keyvault_vault.keys_resource_ids.des_key.id
@@ -133,13 +150,14 @@ module "linux_vm" {
   source = "Azure/avm-res-compute-virtualmachine/azurerm"
   version = "0.15.0"
 
-  count                              = var.count
   admin_username                     = var.admin_username
+  admin_password                     =  random_password.admin_password.result
+  disable_password_authentication    = false
   enable_telemetry                   = false
   encryption_at_host_enabled         = false
   generate_admin_password_or_ssh_key = true
   location                           = data.azurerm_resource_group.agent_rg.location
-  name                               = local.vm_names[count.index]
+  name                               = var.vm_name
   resource_group_name                = data.azurerm_resource_group.agent_rg.name
   os_type                            = "Linux"
   size                               = var.vmSku          
@@ -156,7 +174,7 @@ module "linux_vm" {
 
   data_disk_managed_disks = {
     disk1 = {
-      name                   = name = format("%s-lun%d", local.vm_names[count.index])
+      name                   = format("%s-lun%d", var.vm_name)
 
       storage_account_type   = "StandardSSD_LRS"
       lun                    = 0
@@ -181,12 +199,12 @@ module "linux_vm" {
   }
   network_interfaces = {
     network_interface_1 = {
-      name                           = format("%s-nic", local.vm_names[count.index])
+      name                           = format("%s-nic", var.vm_name)
       accelerated_networking_enabled = true
       ip_forwarding_enabled          = true
       ip_configurations = {
         ip_configuration_1 = {
-          name                          = format("%s-nic1-ipconfig1", local.vm_names[count.index])
+          name                          = format("%s-nic1-ipconfig1", var.vm_name)
                                           
           private_ip_subnet_resource_id = data.azurerm_subnet.spoke_subnet.id
         }
