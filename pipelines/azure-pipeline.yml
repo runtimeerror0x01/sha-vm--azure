@@ -138,7 +138,8 @@ stages:
 
 - stage: "validate_lint_checkov"
   displayName: "TF code validation and scanner"
-  condition: and(not(failed()), not(canceled()), eq('${{ parameters.DESTROY_TF }}', 'false')), eq('${{ parameters.runValidateLintCheckov }}', 'true'))
+  # condition: and(not(failed()), not(canceled()), eq('${{ parameters.DESTROY_TF }}', 'false')), eq('${{ parameters.runValidateLintCheckov }}', 'true'))
+  condition: and(not(failed()), not(canceled()), eq('${{ parameters.DESTROY_TF }}', 'false'), eq('${{ parameters.runValidateLintCheckov }}', 'true'))
   dependsOn: Install_Pipeline_Dependencies
   jobs:
   - job: ''
