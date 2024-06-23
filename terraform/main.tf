@@ -150,7 +150,7 @@ module "linux_vm" {
   source = "Azure/avm-res-compute-virtualmachine/azurerm"
   version = "0.15.0"
 
-  name                               = var.vm_name
+  name                               = "${var.vm_name_prefix}-vm"
   location                           = data.azurerm_resource_group.agent_rg.location
   resource_group_name                = data.azurerm_resource_group.agent_rg.name
   admin_username                     = var.admin_username
@@ -172,8 +172,7 @@ module "linux_vm" {
 
   data_disk_managed_disks = {
     disk1 = {
-      name                   = format("%s-lun%d", var.vm_name)
-
+      name                   = "${var.vm_name_prefix}-lun"
       storage_account_type   = "Premium_LRS"
       lun                    = 0
       caching                = "ReadWrite"
@@ -197,11 +196,11 @@ module "linux_vm" {
   }
   network_interfaces = {
     network_interface_1 = {
-      name                           = format("%s-nic", var.vm_name)
+      name                           = "${var.vm_name_prefix}-nic"
       accelerated_networking_enabled = true
       ip_configurations = {
         ip_configuration_1 = {
-          name                          = format("%s-nic1-ipconfig1", var.vm_name)
+          name                          = "${var.vm_name_prefix}-nic1-ipconfig1"
           private_ip_address_allocation = "Dynamic"
           private_ip_subnet_resource_id = data.azurerm_subnet.spoke_subnet.id
         }

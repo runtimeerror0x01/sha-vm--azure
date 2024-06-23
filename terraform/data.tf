@@ -50,7 +50,7 @@ data "cloudinit_config" "config" {
 
   # Main cloud-config configuration file.
   part {
-    content_type = "config/cloud-init"
+    content_type = "text/cloud-init"
     content      = file("${path.module}/config/cloud-init.yaml")
   }
 }
