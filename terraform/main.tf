@@ -211,6 +211,7 @@ module "linux_vm" {
   }
 
   os_disk = {
+    disk_size_gb           = 128
     caching                = "ReadWrite"
     storage_account_type   = "Premium_LRS"
     # disk_encryption_set_id = azurerm_disk_encryption_set.this.id
