@@ -37,6 +37,81 @@ stages:
   jobs: 
   - template: templates/pipeline_dependencies.yaml
 
+- stage: terraform_destroy
+  dependsOn: Install_Pipeline_Dependencies
+  condition: and(not(failed()), not(canceled()), eq('${{ parameters.DESTROY_TF }}', 'true'))
+  displayName: TF destroy
+  jobs:
+  - job: 'TF_destroy_plan'
+    steps:
+    - task: TerraformCLI@0
+      displayName: Terraform init
+      inputs:
+        command: 'init'
+        workingDirectory: '$(System.DefaultWorkingDirectory)'
+        backendType: 'azurerm'
+        backendServiceArm: ${{ variables.backend_service_connection_name }}
+        backendAzureRmSubscriptionId: ${{ variables.backend_subscription_id }}
+        ensureBackend: true
+        backendAzureRmResourceGroupName: ${{ variables.backend_resource_group_name }}
+        backendAzureRmResourceGroupLocation: 'East US'
+        backendAzureRmStorageAccountName: ${{ variables.backend_storage_account_name }}
+        backendAzureRmContainerName: ${{ variables.backend_storage_container_name }}
+        backendAzureRmKey: ${{ variables.backend_tfstate_file_name }}
+        allowTelemetryCollection: true
+    - task: TerraformCLI@0
+      displayName: Terraform destroy plan
+      inputs:
+        command: 'plan'
+        workingDirectory: '$(System.DefaultWorkingDirectory)'
+        environmentServiceName: ${{ variables.backend_service_connection_name }}
+        allowTelemetryCollection: false
+        commandOptions: '-destroy -out=tfplan.destroy -var resource_group_name=$(RG_NAME) -var admin_username=$(VMUSER) -var source_image_id=$(imageId) -var-file="$(System.DefaultWorkingDirectory)/terraform/main.variables.tfvars"'
+        publishPlanResults: 'Plan-Destroy'
+    - task: PublishPipelineArtifact@1
+      displayName: 'Upload Terraform Destroy Plan'
+      inputs:
+        targetPath: '$(System.DefaultWorkingDirectory)'
+        artifact: 'tf-artifact'
+        publishLocation: 'pipeline'
+  - job: 'Destroy_Manual_Validation'
+    displayName: 'Wait for External Validation Before Destroy'  
+    dependsOn: TF_destroy_plan
+    pool: server 
+    timeoutInMinutes: 4320 # job times out in 3 days.
+    steps:
+    - task: ManualValidation@0
+      timeoutInMinutes: 1440 # task times out in 1 day
+      inputs:
+        notifyUsers: ${{ variables.notify_email }}
+        instructions: 'Please validate the intention to destroy resources and resume/reject as appropriate. The environment to be destroyed is ${{ variables.backend_storage_container_name }} / ${{ variables.backend_tfstate_file_name }}.'
+        onTimeout: 'reject'
+  - job: 'TF_destroy'
+    dependsOn: Destroy_Manual_Validation
+    steps:  
+    - task: TerraformCLI@0
+      displayName: Terraform init
+      inputs:
+        command: 'init'
+        workingDirectory: '$(System.DefaultWorkingDirectory)'
+        backendType: 'azurerm'
+        backendServiceArm: ${{ variables.backend_service_connection_name }}
+        backendAzureRmSubscriptionId: ${{ variables.backend_subscription_id }}
+        ensureBackend: true
+        backendAzureRmResourceGroupName: ${{ variables.backend_resource_group_name }}
+        backendAzureRmResourceGroupLocation: 'East US'
+        backendAzureRmStorageAccountName: ${{ variables.backend_storage_account_name }}
+        backendAzureRmContainerName: ${{ variables.backend_storage_container_name }}
+        backendAzureRmKey: ${{ variables.backend_tfstate_file_name }}
+        allowTelemetryCollection: true
+    - task: TerraformCLI@0
+      displayName: Terraform destroy
+      inputs:
+        command: 'destroy'
+        environmentServiceName: ${{ variables.backend_service_connection_name }}
+        allowTelemetryCollection: false
+        commandOptions: '-var resource_group_name=$(RG_NAME) -var admin_username=$(VMUSER) -var source_image_id=$(imageId) -var-file="$(System.DefaultWorkingDirectory)/terraform/main.variables.tfvars" -auto-approve'
+
 - stage: "Create_Backend_Storage"
   condition: eq('${{ parameters.Create_Backend_Storage }}', 'true')
   displayName: "Create Backend Storage"
