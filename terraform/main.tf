@@ -156,14 +156,11 @@ module "linux_vm" {
   admin_username                     = var.admin_username
   admin_password                     =  random_password.admin_password.result
   disable_password_authentication    = false
-  enable_telemetry                   = false
-  encryption_at_host_enabled         = false
-  generate_admin_password_or_ssh_key = true
+  generate_admin_password_or_ssh_key = false
   os_type                            = "Linux"
-  size                               = var.vmSku          
-  source_image_id                    = var.source_image_id
+  ssource_image_resource_id          = var.source_image_id
+  sku_size                           = var.vmSku          
   custom_data                        = data.cloudinit_config.config.rendered
-
 
   admin_ssh_keys = [
     {
@@ -176,7 +173,7 @@ module "linux_vm" {
     disk1 = {
       name                   = format("%s-lun%d", var.vm_name)
 
-      storage_account_type   = "StandardSSD_LRS"
+      storage_account_type   = "Premium_LRS"
       lun                    = 0
       caching                = "ReadWrite"
       disk_size_gb           = 128
@@ -215,7 +212,7 @@ module "linux_vm" {
 
   os_disk = {
     caching                = "ReadWrite"
-    storage_account_type   = "StandardSSD_LRS"
+    storage_account_type   = "Premium_LRS"
     # disk_encryption_set_id = azurerm_disk_encryption_set.this.id
   }
 
@@ -234,12 +231,13 @@ module "linux_vm" {
    }
   }
 
-  source_image_reference = {
-    publisher = local.source_image_reference.publisher
-    offer     = local.source_image_reference.offer
-    sku       = local.source_image_reference.sku
-    version   = local.source_image_reference.version
-  }
+  # source_image_reference = {
+
+  #   publisher = local.source_image_reference.publisher
+  #   offer     = local.source_image_reference.offer
+  #   sku       = local.source_image_reference.sku
+  #   version   = local.source_image_reference.version
+  # }
 
   tags = local.tags
 
