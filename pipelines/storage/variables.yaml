@@ -4,6 +4,7 @@ variables:
   backend_subscription_name: Visual Studio Enterprise Subscription - MPN
   backend_subscription_id: b9400fd0-5bf2-4045-a52b-67fc2bf96015 ## backendAzureRmSubscriptionId
   backend_resource_group_name: rg-TFStates ## backendAzureRmResourceGroupName
+  backend_resource_group_location: uksouth
   backend_storage_account_name: aciadolnxtfstates ## 'backendAzureRmStorageAccountName'
   # backend_storage_gitops_agent_vnet: 
   # backend_storage_gitops_agent_subnet: 
