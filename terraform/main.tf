@@ -154,7 +154,7 @@ module "linux_vm" {
   location                           = data.azurerm_resource_group.agent_rg.location
   resource_group_name                = data.azurerm_resource_group.agent_rg.name
   admin_username                     = var.admin_username
-  admin_password                     =  random_password.admin_password.result
+  admin_password                     = random_password.admin_password.result
   disable_password_authentication    = false
   generate_admin_password_or_ssh_key = false
   os_type                            = "Linux"
