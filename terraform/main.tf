@@ -161,6 +161,7 @@ module "linux_vm" {
   source_image_resource_id           = var.source_image_id
   sku_size                           = var.vmSku          
   custom_data                        = data.cloudinit_config.config.rendered
+  zone                               = null
 
   admin_ssh_keys = [
     {
@@ -198,11 +199,10 @@ module "linux_vm" {
     network_interface_1 = {
       name                           = format("%s-nic", var.vm_name)
       accelerated_networking_enabled = true
-      ip_forwarding_enabled          = true
       ip_configurations = {
         ip_configuration_1 = {
           name                          = format("%s-nic1-ipconfig1", var.vm_name)
-                                          
+          private_ip_address_allocation = "Dynamic"
           private_ip_subnet_resource_id = data.azurerm_subnet.spoke_subnet.id
         }
       }
