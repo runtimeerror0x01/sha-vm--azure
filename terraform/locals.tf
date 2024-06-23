@@ -1,5 +1,5 @@
 locals {
-  common_tags = {
+     tags = {
    "BusinessUnit"  = "GMS"
    "Criticality"   = "CatC"
    "ServiceClass"  = "Bronze"

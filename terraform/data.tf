@@ -40,7 +40,7 @@ data "azurerm_virtual_network" "spoke_vnet" {
 
 data "azurerm_subnet" "spoke_subnet" {
   name                 = var.subnet_name
-  virtual_network_name = azurerm_virtual_network.spoke_vnet.name
+  virtual_network_name = data.azurerm_virtual_network.spoke_vnet.name
 }
 
 data "cloudinit_config" "config" {
@@ -50,7 +50,7 @@ data "cloudinit_config" "config" {
   # Main cloud-config configuration file.
   part {
     content_type = "config/cloud-init"
-    # content      = "packages: ['httpie']"
+    content      = file("${path.module}/config/cloud-init.yaml")
   }
 }
 
