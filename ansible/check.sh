@@ -1,7 +1,7 @@
 #!/bin/bash
 
 ## Provisioner log file
-logfile=/var/log/provisioner.log
+logfile=/var/log/validation.log
 
 ## Function to echo action with time stamp
 log() {
