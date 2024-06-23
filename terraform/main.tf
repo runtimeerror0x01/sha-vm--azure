@@ -98,7 +98,7 @@ module "avm_res_keyvault_vault" {
   #       "wrapKey",
   #     ]
   #   }
-  # }
+  }
 }
 
 resource "tls_private_key" "this" {
