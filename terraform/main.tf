@@ -160,7 +160,7 @@ module "linux_vm" {
   os_type                            = "Linux"
   source_image_resource_id           = var.source_image_id
   sku_size                           = var.vmSku          
-  custom_data                        = base64encode(data.cloudinit_config.config.content)
+  custom_data                        = data.cloudinit_config.config.rendered
   zone                               = null
 
   admin_ssh_keys = [
