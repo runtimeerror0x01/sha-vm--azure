@@ -7,3 +7,4 @@ keyvault_name                 = "gitops_vm_kv"
 ssh_key_name                  = "adminuser-ssh-private-key"
 vmSku                         = "Standard_D2_v4"
 vm_name                       = "gitops-uksth-agent-vm"
+                

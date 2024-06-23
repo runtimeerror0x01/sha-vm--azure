@@ -242,6 +242,10 @@ stages:
         commandOptions: -var-file="$(System.DefaultWorkingDirectory)/terraform/main.variables.tfvars"
         allowTelemetryCollection: true
         publishPlanResults: 'Terraform Plan'
+      env:
+        resource_group_name: $(RG_NAME)
+        admin_username:      $(VMUSER)      
+        source_image_id:     $(imageId)
 
     - task: PublishPipelineArtifact@1
       name: Publish_Terraform_Plan
@@ -302,13 +306,14 @@ stages:
       displayName: Terraform apply
       inputs:
         command: 'apply'
+        allowTelemetryCollection: false
         workingDirectory: '$(System.DefaultWorkingDirectory)/terraform'
         environmentServiceName: '${{ variables.backend_service_connection_name }}'
-        commandOptions: |
-             -var-file="$(System.DefaultWorkingDirectory)/terraform/main.variables.tfvars" -auto-approve
-             -var "resource_group_name=$(RG_NAME)"
-             -var "admin_username=$(VMUSER)"        
-             -var "source_image_id=$(imageId)"
-        allowTelemetryCollection: false
+        commandOptions: -var-file="$(System.DefaultWorkingDirectory)/terraform/main.variables.tfvars" -auto-approve
+      env:
+        resource_group_name: $(RG_NAME)
+        admin_username:      $(VMUSER)      
+        source_image_id:     $(imageId)
+
     
  
