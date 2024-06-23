@@ -28,13 +28,13 @@
       register: additional_script_result
 
     - name: Display the contents of /var/log/provisioner.log
-      shell: cat /var/log/provisioner.log
-      register: provisioner_log
+      shell: cat /var/log/validation.log
+      register: validation_log
       ignore_errors: yes
 
-    - name: Show provisioner log
+    - name: Show validation log
       debug:
-        msg: "{{ provisioner_log.stdout }}"
+        msg: "{{ validation_log.stdout }}"
 
 
 
