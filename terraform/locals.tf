@@ -18,5 +18,7 @@ locals {
     version   = "latest"                               # Replace with the version of your custom image
   }
 
+  user_data_base64 = base64encode(data.cloudinit_config.config.content)
+
 }
 

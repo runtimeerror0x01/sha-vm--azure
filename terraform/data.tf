@@ -44,16 +44,18 @@ data "azurerm_subnet" "spoke_subnet" {
   virtual_network_name = data.azurerm_virtual_network.spoke_vnet.name
 }
 
+# data "cloudinit_config" "config" {
+#   gzip          = true
+#   base64_encode = true
+
+#   part {
+#     filename      = "${path.module}/config/cloud-init.yaml"
+#     content_type = "text/cloud-init"
+#   }
+# }
 data "cloudinit_config" "config" {
-  gzip          = true
-  base64_encode = true
-
-  part {
-    filename      = "${path.module}/config/cloud-init.yaml"
-    content_type = "text/cloud-init"
-  }
+  filename = "${path.module}/config/cloud-init.yaml"
 }
-
 # Current client config for object and tenant ID
 
 data "azurerm_client_config" "current" {}
