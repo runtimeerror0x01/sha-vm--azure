@@ -108,7 +108,7 @@ resource "tls_private_key" "this" {
 
 resource "azurerm_key_vault_secret" "admin_ssh_key" {
   key_vault_id = module.avm_res_keyvault_vault.resource_id
-  name         = "${var.vm_name}-ssh-key"
+  name         = "${var.vm_name_prefix}-ssh-key"
   value        = tls_private_key.this.private_key_pem
 
   depends_on = [
@@ -123,7 +123,7 @@ resource "random_password" "admin_password" {
 }
 
 resource "azurerm_key_vault_secret" "admin_password" {
-  name         = "${var.vm_name}-password"
+  name         = "${var.vm_name_prefix}-password"
   value        = random_password.admin_password.result
   key_vault_id = module.avm_res_keyvault_vault.resource_id
 
