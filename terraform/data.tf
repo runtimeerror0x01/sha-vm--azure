@@ -40,6 +40,7 @@ data "azurerm_virtual_network" "spoke_vnet" {
 
 data "azurerm_subnet" "spoke_subnet" {
   name                 = var.subnet_name
+  resource_group_name  = var.virtual_network_rg
   virtual_network_name = data.azurerm_virtual_network.spoke_vnet.name
 }
 
