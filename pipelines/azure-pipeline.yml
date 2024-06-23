@@ -382,21 +382,41 @@ stages:
         workingDirectory: '$(System.DefaultWorkingDirectory)/terraform'
         environmentServiceName: '${{ variables.backend_service_connection_name }}'
         commandOptions: -var resource_group_name=$(RG_NAME) -var admin_username=$(VMUSER) -var source_image_id=$(imageId) -var-file="$(System.DefaultWorkingDirectory)/terraform/main.variables.tfvars"
-    - task: TerraformCLI@0
-      displayName: Get Terraform Outputs
+    # - task: TerraformCLI@0
+    #   displayName: Get Terraform Outputs
+    #   inputs:
+    #     command: 'output'
+    #     workingDirectory: '$(System.DefaultWorkingDirectory)/terraform'
+    #     environmentServiceName: '${{ variables.backend_service_connection_name }}'
+    #     commandOptions: 'admin_password -json > $(System.DefaultWorkingDirectory)/terraform/terraform_outputs.json'
+    - task: TerraformTaskV4@4
       inputs:
-        command: 'output'
+        provider: 'azurerm'
+        command: 'custom'
+        customCommand: 'output'
         workingDirectory: '$(System.DefaultWorkingDirectory)/terraform'
-        environmentServiceName: '${{ variables.backend_service_connection_name }}'
-        commandOptions: 'admin_password -json > $(System.DefaultWorkingDirectory)/terraform/terraform_outputs.json'
+        outputTo: file
+        fileName: 'output.json'
+        environmentServiceNameAzureRM: '${{ variables.backend_service_connection_name }}'
     - task: Bash@3
       displayName: Extract admin password from Terraform outputs
       inputs:
         targetType: 'inline'
         script: |
-          admin_password=$(jq -r '.admin_password.value' < $(System.DefaultWorkingDirectory)/terraform/terraform_outputs.json)
-          echo "##vso[task.setvariable variable=adminPassword]$admin_password"
-          echo "Waiting for agent to become online..."
+          # admin_password=$(jq -r '.admin_password.value' < $(System.DefaultWorkingDirectory)/terraform/terraform_outputs.json)
+          # echo "##vso[task.setvariable variable=adminPassword]$admin_password"
+          # echo "Waiting for agent to become online..."
+          output=$(jq 'to_entries|map([.key] + [.value.value] + [.value.sensitive])' $(System.DefaultWorkingDirectory)/terraform/output.json | jq -c '.[]')
+           for row in $(echo "${output}" ); do
+                variable=$(echo "${row}" | jq -r '.[0]')
+                value=$(echo "${row}" | jq -r '.[1]')
+                isSecret=$(echo "${row}" | jq -r '.[2]')
+
+                echo "Creating variable ${variable}"
+                echo "##vso[task.setvariable variable=${variable};isSecret=${isSecret}]${value}"
+                
+            done
+
           sleep 90 
 
   - job: Ansible
@@ -407,5 +427,5 @@ stages:
         steps:        
         - script: |
             ansible-playbook -i $(System.DefaultWorkingDirectory)/ansible/hosts.yml $(System.DefaultWorkingDirectory)/ansible/playbook.yml \
-            --extra-vars "adminUsername=$(VMUSER) adminPassword=$(adminPassword)"
+            --extra-vars "adminUsername=$(VMUSER) adminPassword=$(admin_password)"
           displayName: 'Run Ansible Playbook'
