@@ -158,7 +158,7 @@ module "linux_vm" {
   disable_password_authentication    = false
   generate_admin_password_or_ssh_key = false
   os_type                            = "Linux"
-  ssource_image_resource_id          = var.source_image_id
+  source_image_resource_id           = var.source_image_id
   sku_size                           = var.vmSku          
   custom_data                        = data.cloudinit_config.config.rendered
 
