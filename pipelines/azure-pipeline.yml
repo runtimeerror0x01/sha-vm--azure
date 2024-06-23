@@ -397,9 +397,9 @@ stages:
           echo "##vso[task.setvariable variable=adminPassword]$admin_password"
           echo "Waiting for agent to become online..."
           sleep 90 
-          
+
   - job: Ansible
-    dependsOn: DeployVm
+    dependsOn: TF_apply
     displayName: Configure agent as a service
     pool:
         name: 'master-pool' 
