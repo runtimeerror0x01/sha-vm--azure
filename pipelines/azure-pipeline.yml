@@ -382,13 +382,7 @@ stages:
         workingDirectory: '$(System.DefaultWorkingDirectory)/terraform'
         environmentServiceName: '${{ variables.backend_service_connection_name }}'
         commandOptions: -var resource_group_name=$(RG_NAME) -var admin_username=$(VMUSER) -var source_image_id=$(imageId) -var-file="$(System.DefaultWorkingDirectory)/terraform/main.variables.tfvars"
-    # - task: TerraformCLI@0
-    #   displayName: Get Terraform Outputs
-    #   inputs:
-    #     command: 'output'
-    #     workingDirectory: '$(System.DefaultWorkingDirectory)/terraform'
-    #     environmentServiceName: '${{ variables.backend_service_connection_name }}'
-    #     commandOptions: 'admin_password -json > $(System.DefaultWorkingDirectory)/terraform/terraform_outputs.json'
+
     - task: TerraformTaskV4@4
       inputs:
         provider: 'azurerm'
@@ -403,9 +397,6 @@ stages:
       inputs:
         targetType: 'inline'
         script: |
-          # admin_password=$(jq -r '.admin_password.value' < $(System.DefaultWorkingDirectory)/terraform/terraform_outputs.json)
-          # echo "##vso[task.setvariable variable=adminPassword]$admin_password"
-          # echo "Waiting for agent to become online..."
           output=$(jq 'to_entries|map([.key] + [.value.value] + [.value.sensitive])' $(System.DefaultWorkingDirectory)/terraform/output.json | jq -c '.[]')
            for row in $(echo "${output}" ); do
                 variable=$(echo "${row}" | jq -r '.[0]')
@@ -413,11 +404,9 @@ stages:
                 isSecret=$(echo "${row}" | jq -r '.[2]')
 
                 echo "Creating variable ${variable}"
-                echo "##vso[task.setvariable variable=${variable};isSecret=${isSecret}]${value}"
-                
+                echo "##vso[task.setvariable variable=${variable};isSecret=${isSecret}]${value}" 
             done
-
-          sleep 90 
+          sleep 30 
 
   - job: Ansible
     dependsOn: TF_apply
