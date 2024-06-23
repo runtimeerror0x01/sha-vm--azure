@@ -66,7 +66,7 @@ stages:
         workingDirectory: '$(System.DefaultWorkingDirectory)/terraform'
         environmentServiceName: ${{ variables.backend_service_connection_name }}
         allowTelemetryCollection: false
-        commandOptions: '-destroy -out=tfplan.destroy -var resource_group_name=$(RG_NAME) -var admin_username=$(VMUSER) -var source_image_id=$(imageId) -var-file="$(System.DefaultWorkingDirectory)/terraform/main.variables.tfvars"'
+        commandOptions: '-destroy -out=tfplan.destroy -var-file="$(System.DefaultWorkingDirectory)/terraform/main.variables.tfvars"'
         publishPlanResults: 'Plan-Destroy'
     - task: PublishPipelineArtifact@1
       displayName: 'Upload Terraform Destroy Plan'
@@ -110,7 +110,7 @@ stages:
         command: 'destroy'
         environmentServiceName: ${{ variables.backend_service_connection_name }}
         allowTelemetryCollection: false
-        commandOptions: '-var resource_group_name=$(RG_NAME) -var admin_username=$(VMUSER) -var source_image_id=$(imageId) -var-file="$(System.DefaultWorkingDirectory)/terraform/main.variables.tfvars" -auto-approve'
+        commandOptions: '-var-file="$(System.DefaultWorkingDirectory)/terraform/main.variables.tfvars" -auto-approve'
 
 - stage: "Create_Backend_Storage"
   condition: eq('${{ parameters.Create_Backend_Storage }}', 'true')
