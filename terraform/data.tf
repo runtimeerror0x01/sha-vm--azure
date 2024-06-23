@@ -45,16 +45,13 @@ data "azurerm_subnet" "spoke_subnet" {
 }
 
 data "cloudinit_config" "config" {
- 
-  filename = "${path.module}/config/cloud-init.yaml"
-  # gzip          = true
-  # base64_encode = true
+  gzip          = true
+  base64_encode = true
 
-  # Main cloud-config configuration file.
-  # part {
-    # content_type = "text/cloud-init"
-    # content      = file("${path.module}/config/cloud-init.yaml")
-  # }
+  part {
+    filename      = "${path.module}/config/cloud-init.yaml"
+    content_type = "text/cloud-init"
+  }
 }
 
 # Current client config for object and tenant ID
