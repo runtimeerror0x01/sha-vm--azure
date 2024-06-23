@@ -5,6 +5,6 @@ subnet_name                   = "vmSubnet"
 managed_identity_name         = "gitops-vm-identity"
 keyvault_name                 = "gitops-vm-kv"
 ssh_key_name                  = "adminuser-ssh-private-key"
-vmSku                         = "Standard_D2_v4"
+vmSku                         = "Standard_B2ms"
 vm_name_prefix                = "gitops-uksth-agent"
                 

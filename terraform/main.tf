@@ -170,25 +170,26 @@ module "linux_vm" {
     }
   ]
 
-  data_disk_managed_disks = {
-    disk1 = {
-      name                   = "${var.vm_name_prefix}-lun"
-      storage_account_type   = "Premium_LRS"
-      lun                    = 0
-      caching                = "ReadWrite"
-      disk_size_gb           = 128
-      # disk_encryption_set_id = azurerm_disk_encryption_set.this.id
-      resource_group_name    = data.azurerm_resource_group.agent_rg.name
-      role_assignments = {
-        role_assignment_2 = {
-          principal_id               = data.azurerm_client_config.current.client_id
-          role_definition_id_or_name = "Contributor"
-          description                = "Assign the Contributor role to the deployment user on this managed disk resource scope."
-          principal_type             = "ServicePrincipal"
-        }
-      }
-    }
-  }
+// Use this if Data Disk is required
+  # data_disk_managed_disks = {
+  #   disk1 = {
+  #     name                   = "${var.vm_name_prefix}-lun"
+  #     storage_account_type   = "Premium_LRS"
+  #     lun                    = 0
+  #     caching                = "ReadWrite"
+  #     disk_size_gb           = 128
+  #     # disk_encryption_set_id = azurerm_disk_encryption_set.this.id
+  #     resource_group_name    = data.azurerm_resource_group.agent_rg.name
+  #     role_assignments = {
+  #       role_assignment_2 = {
+  #         principal_id               = data.azurerm_client_config.current.client_id
+  #         role_definition_id_or_name = "Contributor"
+  #         description                = "Assign the Contributor role to the deployment user on this managed disk resource scope."
+  #         principal_type             = "ServicePrincipal"
+  #       }
+  #     }
+  #   }
+  # }
 
   managed_identities = {
     system_assigned            = false
