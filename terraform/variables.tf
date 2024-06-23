@@ -24,7 +24,7 @@ variable "subnet_name" {
   description = "Name of the Subnet"
 }
 
-variable "vm_name" {
+variable "vm_name_prefix" {
   type        = string
   description = "List of VM names to deploy"
 }
