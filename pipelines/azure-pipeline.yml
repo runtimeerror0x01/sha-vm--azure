@@ -247,7 +247,7 @@ stages:
       name: Publish_Terraform_Plan
       displayName: 'Publish terraform plan'
       inputs:
-        targetPath: '$(System.DefaultWorkingDirectory)/terraform/terraform.tfplan'
+        targetPath: '$(System.DefaultWorkingDirectory)/terraform'
         artifactName: 'terraform.tfplan'
         publishLocation: 'pipeline'    
 
