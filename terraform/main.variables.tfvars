@@ -6,5 +6,5 @@ managed_identity_name         = "gitops-vm-identity"
 keyvault_name                 = "gitops-vm-kv"
 ssh_key_name                  = "adminuser-ssh-private-key"
 vmSku                         = "Standard_D2_v4"
-vm_name                       = "gitops-uksth-agent-vm"
+vm_name_prefix                = "gitops-uksth-agent"
                 
