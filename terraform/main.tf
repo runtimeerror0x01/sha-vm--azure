@@ -84,21 +84,21 @@ module "avm_res_keyvault_vault" {
   tags = local.tags
 
   keys = {
-    des_key = {
-      name     = "des-disk-key"
-      key_type = "RSA"
-      key_size = 2048
+  #   des_key = {
+  #     name     = "des-disk-key"
+  #     key_type = "RSA"
+  #     key_size = 2048
 
-      key_opts = [
-        "decrypt",
-        "encrypt",
-        "sign",
-        "unwrapKey",
-        "verify",
-        "wrapKey",
-      ]
-    }
-  }
+  #     key_opts = [
+  #       "decrypt",
+  #       "encrypt",
+  #       "sign",
+  #       "unwrapKey",
+  #       "verify",
+  #       "wrapKey",
+  #     ]
+  #   }
+  # }
 }
 
 resource "tls_private_key" "this" {
