@@ -397,14 +397,14 @@ stages:
           echo "##vso[task.setvariable variable=adminPassword]$admin_password"
           echo "Waiting for agent to become online..."
           sleep 90 
-
-    - job: Ansible
-      dependsOn: DeployVm
-      displayName: Configure agent as a service
-      pool:
-         name: 'master-pool' 
-         steps:        
-          - script: |
-              ansible-playbook -i $(System.DefaultWorkingDirectory)/ansible/hosts.yml $(System.DefaultWorkingDirectory)/ansible/playbook.yml \
-              --extra-vars "adminUsername=$(VMUSER) adminPassword=$(adminPassword)"
-            displayName: 'Run Ansible Playbook'
+          
+  - job: Ansible
+    dependsOn: DeployVm
+    displayName: Configure agent as a service
+    pool:
+        name: 'master-pool' 
+        steps:        
+        - script: |
+            ansible-playbook -i $(System.DefaultWorkingDirectory)/ansible/hosts.yml $(System.DefaultWorkingDirectory)/ansible/playbook.yml \
+            --extra-vars "adminUsername=$(VMUSER) adminPassword=$(adminPassword)"
+          displayName: 'Run Ansible Playbook'
