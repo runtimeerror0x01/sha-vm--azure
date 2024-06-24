@@ -325,7 +325,7 @@ stages:
 
 - stage: terraform_apply
   # condition: and(not(failed()), not(canceled()), eq('${{ parameters.DESTROY_TF }}', 'false'))
-  dependsOn: terraform_plan
+  # dependsOn: terraform_plan
   displayName: TF apply
   jobs:
   # - deployment: 'Apply_Manual_Validation'
