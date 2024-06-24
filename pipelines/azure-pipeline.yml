@@ -384,6 +384,7 @@ stages:
         script: |
           echo "Listing contents of $(System.DefaultWorkingDirectory)/terraform"
           ls -la $(System.DefaultWorkingDirectory)/terraform  
+          terraform init
           terraform output -json > output.json
           ls -la $(System.DefaultWorkingDirectory)/terraform  
     # - task: TerraformCLI@2
