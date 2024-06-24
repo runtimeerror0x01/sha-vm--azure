@@ -28,8 +28,9 @@
   
     - name: Validate Packages
       shell: |
-        ls -al
-        ./home/adminuser/azp/_work/_temp/ansible/check.sh
+        ls 
+        chmod +x check.sh
+        check.sh
       register: additional_script_result
 
     - name: Display the contents of /var/log/provisioner.log
