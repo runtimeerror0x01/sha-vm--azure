@@ -416,6 +416,28 @@ stages:
       name: 'master-pool' 
     steps:        
       - script: |
+          if ! command -v ansible &> /dev/null
+          then
+              # Ansible is not installed, so install it
+              echo "Ansible is not installed. Installing..."
+
+              # Update package index
+              sudo apt-get update
+
+              # Install prerequisites (Python and pip)
+              sudo apt-get install -y python3 python3-pip
+
+              # Install Ansible using pip
+              sudo -H pip3 install ansible
+
+              # Output installed Ansible version
+              ansible --version
+
+              echo "Ansible installed successfully."
+          else
+              # Ansible is already installed
+              echo "Ansible is already installed."
+          fi
           ansible-playbook -i $(Build.SourcesDirectory)/ansible/hosts.yml $(Build.SourcesDirectory)/ansible/playbook.yml \
           --extra-vars "adminUsername=$(VMUSER) 
         displayName: 'Run Ansible Playbook'
