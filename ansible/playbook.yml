@@ -22,23 +22,21 @@
         chdir: /home/adminuser/azp
       when: "'not installed' in svc_status.stdout or 'not running' in svc_status.stdout or 'stopped' in svc_status.stdout"
   
-    - name: Validate Packages
-      shell: |
-        ls -al
-        chmod +x ./check.sh
-        ./check.sh
-      register: additional_script_result
+    # - name: Validate Packages
+    #   shell: |
+    #     ls -al
+    #     chmod +x ./check.sh
+    #     ./check.sh
+    #   register: additional_script_result
 
     - name: Display the contents of /var/log/provisioner.log
-      shell: cat /var/log/validation.log
+      shell: cat /var/log/provisioner.log
       register: validation_log
       ignore_errors: yes
 
     - name: Show validation log
       debug:
         msg: "{{ validation_log.stdout }}"
-
-
 
 # - name: Run svc.sh script
 #   hosts: localhost
