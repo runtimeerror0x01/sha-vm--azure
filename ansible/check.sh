@@ -7,15 +7,30 @@ logfile=/var/log/validation.log
 log() {
     echo "$(date +'%X %x') $1" | sudo tee -a $logfile
 }
-
-log "Checking installed packages"
 check_package() {
-    if dpkg -l | grep -q "^ii  $1 "; then
-        log "Package $1 is installed."
+    local package="$1"
+
+    # Capture dpkg -l output and process it
+    local dpkg_output
+    dpkg_output="$(dpkg -l)"
+    echo "DPKG Output:"
+    echo "$dpkg_output"  # Debug: Display dpkg -l output
+
+    # Process each line to check if package is installed
+    if echo "$dpkg_output" | grep -q "^ii[[:space:]]*$package[[:space:]]"; then
+        log "Package $package is installed."
     else
-        log "Package $1 is NOT installed."
+        log "Package $package is NOT installed."
     fi
 }
+# log "Checking installed packages"
+# check_package() {
+#     if dpkg -l | grep -q "^ii  $1 "; then
+#         log "Package $1 is installed."
+#     else
+#         log "Package $1 is NOT installed."
+#     fi
+# }
 
 packages=(
     "bash-completion"
