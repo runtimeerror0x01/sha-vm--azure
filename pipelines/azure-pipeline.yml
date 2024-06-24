@@ -379,7 +379,7 @@ stages:
         environmentServiceName: '${{ variables.backend_service_connection_name }}'
         commandOptions: -var resource_group_name=$(RG_NAME) -var admin_username=$(VMUSER) -var source_image_id=$(imageId) -var-file="$(System.DefaultWorkingDirectory)/terraform/main.variables.tfvars"
     - script: |
-           Start-Sleep 60
+           sleep 30 
       displayName: 'Waiting for agent to become online'
    
     # - task: Bash@3
