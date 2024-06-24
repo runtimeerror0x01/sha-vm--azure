@@ -1,34 +1,29 @@
-/* Uncomment this section if you would like to include a bastion resource with this example.
-
-module "naming" {
-  source  = "Azure/naming/azurerm"
-  version = "~> 0.4"
-}
+/* Uncomment this section if you would like to include a bastion resource with new subnet.
 
 resource "azurerm_subnet" "bastion_subnet" {
   name                 = "AzureBastionSubnet"
-  resource_group_name  = data.azurerm_resource_group.agent_rg.name
-  virtual_network_name = data.azurerm_virtual_network.spoke_vnet.name
+  resource_group_name  = 
+  virtual_network_name = 
   address_prefixes     = [""]
 }
 
 resource "azurerm_public_ip" "bastionpip" {
-  name                = module.naming.public_ip.name_unique
-  location            = data.azurerm_resource_group.agent_rg.location
-  resource_group_name = data.azurerm_resource_group.agent_rg.name
+  name                = 
+  location            = 
+  resource_group_name = 
   allocation_method   = "Static"
   sku                 = "Standard"
 }
 
 resource "azurerm_bastion_host" "bastion" {
-  name                = module.naming.bastion_host.name_unique
-  location            = data.azurerm_resource_group.agent_rg.location
-  resource_group_name = data.azurerm_resource_group.agent_rg.name
+  name                = 
+  location            = 
+  resource_group_name = 
 
   ip_configuration {
-    name                 = "${module.naming.bastion_host.name_unique}-ipconf"
-    subnet_id            = azurerm_subnet.bastion_subnet.id
-    public_ip_address_id = azurerm_public_ip.bastionpip.id
+    name                 = 
+    subnet_id            = 
+    public_ip_address_id = 
   }
 }
 */
@@ -54,11 +49,11 @@ module "avm_res_keyvault_vault" {
   }
 
   role_assignments = {
-    deployment_user_secrets = { #give the deployment user access to secrets
+    deployment_user_secrets = { #give the deployment user/service principal access to secrets
       role_definition_id_or_name = "Key Vault Secrets Officer"
       principal_id               = data.azurerm_client_config.current.object_id
     }
-    deployment_user_keys = { #give the deployment user access to keys
+    deployment_user_keys = { #give the deployment user/service principal access to keys
       role_definition_id_or_name = "Key Vault Crypto Officer"
       principal_id               = data.azurerm_client_config.current.object_id
     }
@@ -221,7 +216,7 @@ module "linux_vm" {
     role_assignment_2 = {
       principal_id               = data.azurerm_client_config.current.client_id
       role_definition_id_or_name = "Virtual Machine Contributor"
-      description                = "Assign the Virtual Machine Contributor role to the deployment user on this virtual machine resource scope."
+      description                = "Assign the Virtual Machine Contributor role to the deployment user/sp on this virtual machine resource scope."
       principal_type             = "ServicePrincipal"
     }
    role_assignment_3 = {
