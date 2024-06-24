@@ -27,7 +27,9 @@
       when: "'not installed' in svc_status.stdout or 'not running' in svc_status.stdout or 'stopped' in svc_status.stdout"
   
     - name: Validate Packages
-      shell: ./home/adminuser/azp/_work/_temp/ansible/check.sh
+      shell: |
+        ls -al
+        ./home/adminuser/azp/_work/_temp/ansible/check.sh
       register: additional_script_result
 
     - name: Display the contents of /var/log/provisioner.log
