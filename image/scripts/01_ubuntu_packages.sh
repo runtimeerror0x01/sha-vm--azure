@@ -1,18 +1,28 @@
 #!/bin/bash
-## Provisioner log file
+
+# Provisioner log file
 logfile=/var/log/provisioner.log
-## Function to echo action with time stamp
+
+# Function to echo action with timestamp
 log() {
     echo "$(date +'%X %x') $1" | sudo tee -a $logfile
 }
 
+# Ensure the system has the required repositories and update the package lists
+log "Updating repository information and configuring repositories"
+
+# Adding universe and multiverse repositories for additional packages
+sudo add-apt-repository universe -y >> $logfile 2>&1
+sudo add-apt-repository multiverse -y >> $logfile 2>&1
+
+# Updating repository information after adding repositories
+sudo apt update -y >> $logfile 2>&1
+
 log "Updating Operating System"
-DEBIAN_FRONTEND=noninteractive sudo apt-get update
-DEBIAN_FRONTEND=noninteractive sudo apt-get upgrade -y
+DEBIAN_FRONTEND=noninteractive sudo apt upgrade -y >> $logfile 2>&1
 
 log "Installing basic packages for smooth system functioning"
-DEBIAN_FRONTEND=noninteractive sudo apt-get install -y bash-completion >> $logfile 2>&1
-DEBIAN_FRONTEND=noninteractive sudo apt-get install -y \
+DEBIAN_FRONTEND=noninteractive sudo apt install -y bash-completion \
         build-essential \
         git \
         apt-transport-https \
@@ -21,7 +31,6 @@ DEBIAN_FRONTEND=noninteractive sudo apt-get install -y \
         iputils-ping \
         curl \
         file \
-        git \
         gnupg \
         gnupg-agent \
         locales \
@@ -33,7 +42,6 @@ DEBIAN_FRONTEND=noninteractive sudo apt-get install -y \
         jq \
         netcat \
         software-properties-common \
-        build-essential \
         python3 \
         python3-pip \
         dnsutils \
@@ -64,7 +72,6 @@ DEBIAN_FRONTEND=noninteractive sudo apt-get install -y \
         zlib1g \
         npm \
         dotnet-sdk-8.0 \
-        default-jdk >> $logfile 2>&1     
+        default-jdk >> $logfile 2>&1
 
-    log "Provisioning completed successfully"
-
+log "Provisioning completed successfully"
