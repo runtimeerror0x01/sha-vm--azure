@@ -439,7 +439,7 @@ stages:
               echo "Ansible is already installed."
           fi
           ls -la
-          ansible-playbook -i ansible/hosts.yml ansible/playbook.yml --extra-vars "adminUsername=$(VMUSER) 
+          ansible-playbook -i ansible/hosts.yml ansible/playbook.yml --extra-vars "adminUsername=$(VMUSER)"
         displayName: 'Run Ansible Playbook'
 
 
