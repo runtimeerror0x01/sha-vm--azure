@@ -388,11 +388,14 @@ stages:
         outputTo: file
         fileName: 'output.json'
         environmentServiceNameAzureRM: '${{ variables.backend_service_connection_name }}'
+    
     - task: Bash@3
       displayName: Extract admin password from Terraform outputs
       inputs:
         targetType: 'inline'
         script: |
+          echo "Listing contents of $(System.DefaultWorkingDirectory)/terraform"
+          ls -la $(System.DefaultWorkingDirectory)/terraform     
           output=$(jq 'to_entries|map([.key] + [.value.value] + [.value.sensitive])' $(System.DefaultWorkingDirectory)/terraform/output.json | jq -c '.[]')
            for row in $(echo "${output}" ); do
                 variable=$(echo "${row}" | jq -r '.[0]')
