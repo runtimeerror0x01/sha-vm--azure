@@ -1,7 +1,7 @@
 --- 
-- hosts: localhost
-  vars:
-  - username: ${{VMUSER}}       
+# - hosts: localhost
+#   vars:
+#   - username: ${{VMUSER}}       
 
 - name: Manage svc.sh script
   hosts: localhost
@@ -10,20 +10,20 @@
     - name: Check if svc.sh is installed
       shell: ./svc.sh status
       args:
-        chdir: /home/${{username}}/azp
+        chdir: /home/adminuser/azp
       register: svc_status
       ignore_errors: yes
 
     - name: Install the service if not installed
       shell: ./svc.sh install
       args:
-        chdir: /home/${{username}}/azp
+        chdir: /home/adminuser/azp
       when: "'not installed' in svc_status.stdout"
 
     - name: Start the service if not running
       shell: ./svc.sh start
       args:
-        chdir: /home/${{username}}/azp
+        chdir: /home/adminuser/azp
       when: "'not installed' in svc_status.stdout or 'not running' in svc_status.stdout or 'stopped' in svc_status.stdout"
   
     - name: Validate Packages
