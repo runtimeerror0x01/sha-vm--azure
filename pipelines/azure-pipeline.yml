@@ -403,14 +403,14 @@ stages:
                 echo "##vso[task.setvariable variable=${variable};isSecret=${isSecret}]${value}" 
             done
           sleep 30 
-
   - job: Ansible
-    dependsOn: TF_apply
     displayName: Configure agent as a service
+    dependsOn: TF_apply
+    condition: succeeded()
     pool:
-        name: 'master-pool' 
-        steps:        
-        - script: |
-            ansible-playbook -i $(System.DefaultWorkingDirectory)/ansible/hosts.yml $(System.DefaultWorkingDirectory)/ansible/playbook.yml \
-            --extra-vars "adminUsername=$(VMUSER) adminPassword=$(admin_password)"
-          displayName: 'Run Ansible Playbook'
+      name: 'master-pool' 
+      steps:        
+      - script: |
+          ansible-playbook -i $(System.DefaultWorkingDirectory)/ansible/hosts.yml $(System.DefaultWorkingDirectory)/ansible/playbook.yml \
+          --extra-vars "adminUsername=$(VMUSER) adminPassword=$(admin_password)"
+        displayName: 'Run Ansible Playbook'
