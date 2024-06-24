@@ -382,8 +382,7 @@ stages:
       inputs:
         targetType: 'inline'
         script: |
-          echo "Listing contents of $(System.DefaultWorkingDirectory)/terraform"
-          ls -la $(System.DefaultWorkingDirectory)/terraform  
+          cd $(System.DefaultWorkingDirectory)/terraform 
           terraform init
           terraform output -json > output.json
           ls -la $(System.DefaultWorkingDirectory)/terraform  
