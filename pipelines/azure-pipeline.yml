@@ -378,14 +378,21 @@ stages:
         workingDirectory: '$(System.DefaultWorkingDirectory)/terraform'
         environmentServiceName: '${{ variables.backend_service_connection_name }}'
         commandOptions: -var resource_group_name=$(RG_NAME) -var admin_username=$(VMUSER) -var source_image_id=$(imageId) -var-file="$(System.DefaultWorkingDirectory)/terraform/main.variables.tfvars"
-
-    - task: TerraformCLI@2
+    - task: Bash@3
       inputs:
-        command: 'output'
-        workingDirectory: '$(System.DefaultWorkingDirectory)/terraform'
-        environmentServiceName: '${{ variables.backend_service_connection_name }}'
-        commandOptions: '-json > output.json'
-        allowTelemetryCollection: true
+        targetType: 'inline'
+        script: |
+          echo "Listing contents of $(System.DefaultWorkingDirectory)/terraform"
+          ls -la $(System.DefaultWorkingDirectory)/terraform  
+          terraform output '-json > output.json'
+          ls -la $(System.DefaultWorkingDirectory)/terraform  
+    # - task: TerraformCLI@2
+    #   inputs:
+    #     command: 'output'
+    #     workingDirectory: '$(System.DefaultWorkingDirectory)/terraform'
+    #     environmentServiceName: '${{ variables.backend_service_connection_name }}'
+    #     commandOptions: '-json > output.json'
+    #     allowTelemetryCollection: true
     # - task: TerraformTaskV4@4
     #   inputs:
     #     provider: 'azurerm'
