@@ -11,7 +11,7 @@ DEBIAN_FRONTEND=noninteractive sudo apt-get update
 DEBIAN_FRONTEND=noninteractive sudo apt-get upgrade -y
 
 log "Installing basic packages for smooth system functioning"
-DEBIAN_FRONTEND=noninteractive sudo apt-get install -y bash-completion 
+DEBIAN_FRONTEND=noninteractive sudo apt-get install -y bash-completion >> $logfile 2>&1
 DEBIAN_FRONTEND=noninteractive sudo apt-get install -y \
         build-essential \
         git \
@@ -64,7 +64,7 @@ DEBIAN_FRONTEND=noninteractive sudo apt-get install -y \
         zlib1g \
         npm \
         dotnet-sdk-8.0 \
-        default-jdk      
+        default-jdk >> $logfile 2>&1     
 
     log "Provisioning completed successfully"
 
