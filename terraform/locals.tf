@@ -7,8 +7,8 @@ locals {
    "ServiceName"   = "DC"
    "Cost Centre"    = "UKCSP00060"
     "DR"            = "N/A"
-    "Owner"         = "Adrian.Rotermund@computacenter.com"
-    "Approver"      = "Iain.Abraham@computacenter.com"
+    "Owner"         = ""
+    "Approver"      = ""
   }
   region = var.location 
   source_image_reference = {
