@@ -379,7 +379,7 @@ stages:
         environmentServiceName: '${{ variables.backend_service_connection_name }}'
         commandOptions: -var resource_group_name=$(RG_NAME) -var admin_username=$(VMUSER) -var source_image_id=$(imageId) -var-file="${{ variables.target_tfvars }}"
     - script: |
-           sleep 30 
+           sleep 60 
       displayName: 'Waiting for agent to become online'
    
   - job: Ansible
@@ -391,30 +391,11 @@ stages:
       - script: |
           if ! command -v ansible &> /dev/null
           then
-              # Ansible is not installed, so install it
-              echo "Ansible is not installed. Installing..."
-
-              # Update package index
-              sudo apt-get update
-
-              # Install prerequisites (Python and pip)
-              sudo apt-get install -y python3 python3-pip
-
-              # Install Ansible using pip
               sudo -H pip3 install ansible
-
-              # Output installed Ansible version
               ansible --version
-
               echo "Ansible installed successfully."
           else
-              # Ansible is already installed
               echo "Ansible is already installed."
           fi
-          ls -la
           ansible-playbook -i ansible/hosts.yml ansible/playbook.yml --extra-vars "adminUsername=$(VMUSER)"
         displayName: 'Run Ansible Playbook'
-
-
-
-# adminPassword=$(admin_password)"
