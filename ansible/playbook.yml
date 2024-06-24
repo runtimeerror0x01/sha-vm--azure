@@ -1,8 +1,4 @@
 --- 
-# - hosts: localhost
-#   vars:
-#   - username: ${{VMUSER}}       
-
 - name: Manage svc.sh script
   hosts: localhost
   become: true
