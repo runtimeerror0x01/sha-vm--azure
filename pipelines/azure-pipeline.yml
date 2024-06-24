@@ -1,14 +1,14 @@
 trigger: 
  - none
 
-# parameters:
+parameters:
 # - name: buildImage
 #   type: boolean
 #   default: false
 #   displayName: 'Upadet Imaage?'
-# - name: PIPELINE_VARIABLES_PATH # in case there are multiple env subfolders inside pipelines/variables folder, e.g. pipelines/variables/dev or pipelines/variables/prod
-#   type: string
-#   default: 'storage'
+- name: PIPELINE_VARIABLES_PATH # in case there are multiple env subfolders inside pipelines/variables folder, e.g. pipelines/variables/dev or pipelines/variables/prod
+  type: string
+  default: 'storage'
 # - name: DESTROY_TF
 #   type: boolean
 #   default: false
@@ -324,7 +324,7 @@ stages:
 #         publishLocation: 'pipeline'    
 
 - stage: terraform_apply
-  condition: and(not(failed()), not(canceled()), eq('${{ parameters.DESTROY_TF }}', 'false'))
+  # condition: and(not(failed()), not(canceled()), eq('${{ parameters.DESTROY_TF }}', 'false'))
   dependsOn: terraform_plan
   displayName: TF apply
   jobs:
@@ -344,7 +344,7 @@ stages:
   #             instructions: 'Please validate the intention to Apply resources and resume/reject as appropriate.'
   #             onTimeout: 'reject'
   - job: 'TF_apply'
-    dependsOn: Apply_Manual_Validation
+    # dependsOn: Apply_Manual_Validation
     condition: succeeded()
     steps:
     - task: replacetokens@6
