@@ -11,5 +11,5 @@ variables:
   backend_storage_container_name: main
   backend_tfstate_file_name: vmadogent.tfstate
   target_subscription_id: b9400fd0-5bf2-4045-a52b-67fc2bf96015
-  target_tfvars: main.variables.tfvars
+  target_tfvars: $(System.DefaultWorkingDirectory)/terraform/main.variables.tfvars
   notify_email:   
