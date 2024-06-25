@@ -51,7 +51,12 @@ stages:
   jobs:
   - job: 'TF_destroy_plan'
     steps:
-    -
+    - task: TerraformCLI@2
+      inputs:
+        command: 'workspace'
+        workingDirectory: '$(System.DefaultWorkingDirectory)/terraform'
+        allowTelemetryCollection: true
+        workspaceName: '${{ parameters.environment }}'
     - task: TerraformCLI@0
       displayName: Terraform init
       inputs:
@@ -65,7 +70,8 @@ stages:
         backendAzureRmResourceGroupLocation: ${{ variables.backend_resource_group_location }}
         backendAzureRmStorageAccountName: ${{ variables.backend_storage_account_name }}
         backendAzureRmContainerName: ${{ variables.backend_storage_container_name }}
-        backendAzureRmKey: ${{ variables.backend_tfstate_file_name }}
+        backendAzureRmKey: ${{ parameters.environment }}
+        
         allowTelemetryCollection: true
     - task: TerraformCLI@0
       displayName: Terraform destroy plan
@@ -310,7 +316,7 @@ stages:
         backendAzureRmResourceGroupLocation: ${{ variables.backend_resource_group_location }}
         backendAzureRmStorageAccountName: ${{ variables.backend_storage_account_name }}
         backendAzureRmContainerName: ${{ variables.backend_storage_container_name }}
-        backendAzureRmKey: $(backend_tfstate_file_name)
+        backendAzureRmKey: $(default_tfstate_file_name)
         allowTelemetryCollection: true
 
     - task: TerraformCLI@0
