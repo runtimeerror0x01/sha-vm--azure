@@ -97,7 +97,7 @@ stages:
       timeoutInMinutes: 1440 # task times out in 1 day
       inputs:
         notifyUsers: ${{ variables.notify_email }}
-        instructions: 'Please validate the intention to destroy resources and resume/reject as appropriate. The environment to be destroyed is ${{ variables.backend_storage_container_name }} / ${{ variables.backend_tfstate_file_name }}.'
+        instructions: 'Please validate the intention to destroy resources and resume/reject as appropriate. The environment to be destroyed is ${{ variables.backend_storage_container_name }} / ${{variables.default_tfstate_file_name}}.'
         onTimeout: 'reject'
   - job: 'TF_destroy'
     dependsOn: Destroy_Manual_Validation
@@ -315,7 +315,7 @@ stages:
         backendAzureRmResourceGroupLocation: ${{ variables.backend_resource_group_location }}
         backendAzureRmStorageAccountName: ${{ variables.backend_storage_account_name }}
         backendAzureRmContainerName: ${{ variables.backend_storage_container_name }}
-        backendAzureRmKey: $(variables.default_tfstate_file_name)
+        backendAzureRmKey: ${{variables.default_tfstate_file_name}}
         allowTelemetryCollection: true
     
     - task: AzureCLI@2
@@ -327,7 +327,7 @@ stages:
         inlineScript: |
             cd terraform
             terraform workspace select ${{ parameters.environment }} || terraform workspace new ${{ parameters.environment }}
-            
+
     - task: TerraformCLI@0
       displayName: Terraform plan
       inputs:
