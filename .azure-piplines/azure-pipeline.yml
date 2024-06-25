@@ -315,7 +315,7 @@ stages:
         backendAzureRmResourceGroupLocation: ${{ variables.backend_resource_group_location }}
         backendAzureRmStorageAccountName: ${{ variables.backend_storage_account_name }}
         backendAzureRmContainerName: ${{ variables.backend_storage_container_name }}
-        backendAzureRmKey: $(default_tfstate_file_name)
+        backendAzureRmKey: $(variables.default_tfstate_file_name)
         allowTelemetryCollection: true
     
     - task: AzureCLI@2
@@ -327,6 +327,7 @@ stages:
         inlineScript: |
             cd terraform
             terraform workspace select ${{ parameters.environment }} || terraform workspace new ${{ parameters.environment }}
+            
     - task: TerraformCLI@0
       displayName: Terraform plan
       inputs:
