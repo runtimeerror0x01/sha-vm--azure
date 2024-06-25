@@ -18,7 +18,13 @@ parameters:
   default: true
 - name: Create_Backend_Storage
   type: boolean
-  default: false  
+  default: false
+- name: environment
+  type: string
+  default: dev
+  value:
+    - dev
+    - prod
 
 variables:
   - group: vmSecrets
@@ -57,7 +63,8 @@ stages:
         backendAzureRmResourceGroupLocation: ${{ variables.backend_resource_group_location }}
         backendAzureRmStorageAccountName: ${{ variables.backend_storage_account_name }}
         backendAzureRmContainerName: ${{ variables.backend_storage_container_name }}
-        backendAzureRmKey: ${{ variables.backend_tfstate_file_name }}
+        workspaceName: ${{ parameters.environment }}
+
         allowTelemetryCollection: true
     - task: TerraformCLI@0
       displayName: Terraform destroy plan
@@ -215,7 +222,7 @@ stages:
       displayName: Terraform init
       inputs:
         command: 'init'
-        workingDirectory: '$(System.DefaultWorkingDirectory)'
+        workingDirectory: '$(System.DefaultWorkingDirectory)/terraform'
         backendType: 'azurerm'
         backendServiceArm: ${{ variables.backend_service_connection_name }}
         backendAzureRmSubscriptionId: ${{ variables.backend_subscription_id }}
@@ -224,7 +231,7 @@ stages:
         backendAzureRmResourceGroupLocation: ${{ variables.backend_resource_group_location }}
         backendAzureRmStorageAccountName: ${{ variables.backend_storage_account_name }}
         backendAzureRmContainerName: ${{ variables.backend_storage_container_name }}
-        backendAzureRmKey: ${{ variables.backend_tfstate_file_name }}
+        backendAzureRmKey: ${{ variables.default_tfstate_file_name }}
         allowTelemetryCollection: true
     - task: TerraformCLI@0
       displayName: "Tf validate"
@@ -240,16 +247,16 @@ stages:
       name: tflint_run
       displayName: 'Initialize and run tflint'
       inputs:
-        workingDirectory: '$(System.DefaultWorkingDirectory)'
+        workingDirectory: '$(System.DefaultWorkingDirectory)/terraform'
         script: |
           echo -e "\n##[command]Initializing tflint plugins:"
-          tflint --init --config=./pipelines/config_files/.tflint.hcl
-          echo -e "\n##[command]Running tflint --config=./pipelines/config_files/.tflint.hcl --no-color --module --format=default | tee tflint.report.txt:"
-          tflint --config=./pipelines/config_files/.tflint.hcl --no-color --module --format=default | tee tflint.report.txt
+          tflint --init --config=./.azure-pipelines/config_files/.tflint.hcl
+          echo -e "\n##[command]Running tflint --config=./.azure-pipelines/config_files/.tflint.hcl --no-color --module --format=default | tee tflint.report.txt:"
+          tflint --config=./.azure-pipelines/config_files/.tflint.hcl --no-color --module --format=default | tee tflint.report.txt
           echo -e "##[command]Done."
           echo "##vso[task.setvariable variable=publish_tflint;]false"
-          if [[ $(find $(System.DefaultWorkingDirectory)/tflint.report.txt -type f -size +1c 2>/dev/null) ]]; then
-            cp $(System.DefaultWorkingDirectory)/tflint.report.txt $(Build.ArtifactStagingDirectory) >> /dev/null 2>&1
+          if [[ $(find $(System.DefaultWorkingDirectory)/terraform/tflint.report.txt -type f -size +1c 2>/dev/null) ]]; then
+            cp $(System.DefaultWorkingDirectory)/terraform/tflint.report.txt $(Build.ArtifactStagingDirectory) >> /dev/null 2>&1
             echo -e "\n##[command]Tflint report will be published as there are some findings."
             echo "##vso[task.setvariable variable=publish_tflint;]true"
           else
@@ -265,14 +272,14 @@ stages:
         targetType: inline
         script: |
           sudo docker pull bridgecrew/checkov
-        workingDirectory: $(System.DefaultWorkingDirectory)
+        workingDirectory: '$(System.DefaultWorkingDirectory)/terraform'
     - task: Bash@3
       displayName: "Run > checkov"
       inputs:
         targetType: inline
         script: |
           sudo docker run --volume $(pwd):/tf bridgecrew/checkov --directory /tf --output junitxml --soft-fail > $(pwd)/CheckovReport.xml
-        workingDirectory: $(System.DefaultWorkingDirectory)
+        workingDirectory: '$(System.DefaultWorkingDirectory)/terraform'
     - task: PublishTestResults@2
       inputs:
         testRunTitle: "Checkov Results"
@@ -302,17 +309,16 @@ stages:
         backendAzureRmResourceGroupLocation: ${{ variables.backend_resource_group_location }}
         backendAzureRmStorageAccountName: ${{ variables.backend_storage_account_name }}
         backendAzureRmContainerName: ${{ variables.backend_storage_container_name }}
-        backendAzureRmKey: $(backend_tfstate_file_name)
+        workspaceName: ${{ parameters.environment }}
         allowTelemetryCollection: true
 
     - task: TerraformCLI@0
       displayName: Terraform plan
       inputs:
-       
         command: 'plan'
         workingDirectory: '$(System.DefaultWorkingDirectory)/terraform'
-        environmentServiceName: '${{ variables.target_service_connection_name  }}'
-        commandOptions: -var resource_group_name=$(RG_NAME) -var admin_username=$(VMUSER) -var source_image_id=$(imageId) -var-file="${{ variables.target_tfvars }}"
+        environmentServiceName: '${{ variables.target_service_connection_name }}'
+        commandOptions: -var resource_group_name=$(RG_NAME) -var admin_username=$(VMUSER) -var source_image_id=$(imageId) -var-file="${{ target_tfvars_path }}${{parameters.environment}}"
         allowTelemetryCollection: true
         publishPlanResults: 'Terraform Plan'
 
@@ -368,7 +374,7 @@ stages:
         backendAzureRmResourceGroupLocation: ${{ variables.backend_resource_group_location }}
         backendAzureRmStorageAccountName: ${{ variables.backend_storage_account_name }}
         backendAzureRmContainerName: ${{ variables.backend_storage_container_name }}
-        backendAzureRmKey: $(backend_tfstate_file_name)
+        workspaceName: ${{ parameters.environment }}
         allowTelemetryCollection: true
 
     - task: TerraformCLI@0
@@ -378,7 +384,7 @@ stages:
         allowTelemetryCollection: false
         workingDirectory: '$(System.DefaultWorkingDirectory)/terraform'
         environmentServiceName: '${{ variables.target_service_connection_name  }}'
-        commandOptions: -var resource_group_name=$(RG_NAME) -var admin_username=$(VMUSER) -var source_image_id=$(imageId) -var-file="${{ variables.target_tfvars }}"
+        commandOptions: -var resource_group_name=$(RG_NAME) -var admin_username=$(VMUSER) -var source_image_id=$(imageId) -var-file="${{ target_tfvars_path }}${{parameters.environment}}"
     - script: |
            sleep 60 
       displayName: 'Waiting for agent to become online'
