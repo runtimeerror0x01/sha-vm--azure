@@ -19,6 +19,13 @@ parameters:
 - name: Create_Backend_Storage
   type: boolean
   default: false  
+- name: environment
+  type: string
+  default: devops
+  values:
+  - dev
+  - prod
+
 
 variables:
   - group: vmSecrets
@@ -44,6 +51,7 @@ stages:
   jobs:
   - job: 'TF_destroy_plan'
     steps:
+    -
     - task: TerraformCLI@0
       displayName: Terraform init
       inputs:
@@ -66,7 +74,7 @@ stages:
         workingDirectory: '$(System.DefaultWorkingDirectory)/terraform'
         environmentServiceName: ${{ variables.backend_service_connection_name }}
         allowTelemetryCollection: false
-        commandOptions: '-destroy -out=tfplan.destroy -var-file="${{ variables.target_tfvars }}" -var resource_group_name=$(RG_NAME) -var admin_username=$(VMUSER) -var source_image_id=$(imageId) '
+        commandOptions: '-destroy -out=tfplan.destroy -var-file="${{ variables.target_tfvars_path }}${{ parameters.environment }}" -var resource_group_name=$(RG_NAME) -var admin_username=$(VMUSER) -var source_image_id=$(imageId) '
         publishPlanResults: 'Plan-Destroy'
     - task: PublishPipelineArtifact@1
       displayName: 'Upload Terraform Destroy Plan'
@@ -110,7 +118,7 @@ stages:
         command: 'destroy'
         workingDirectory: '$(System.DefaultWorkingDirectory)/terraform'
         environmentServiceName: '${{ variables.backend_service_connection_name }}'
-        commandOptions: '-var resource_group_name=$(RG_NAME) -var admin_username=$(VMUSER) -var source_image_id=$(imageId) -var-file="${{ variables.target_tfvars }}" -auto-approve'
+        commandOptions: '-var resource_group_name=$(RG_NAME) -var admin_username=$(VMUSER) -var source_image_id=$(imageId) -var-file="${{ variables.target_tfvars_path }}${{ parameters.environment }}" -auto-approve'
         allowTelemetryCollection: true
 
 - stage: "Create_Backend_Storage"
@@ -311,7 +319,7 @@ stages:
         command: 'plan'
         workingDirectory: '$(System.DefaultWorkingDirectory)/terraform'
         environmentServiceName: '${{ variables.backend_service_connection_name }}'
-        commandOptions: -var resource_group_name=$(RG_NAME) -var admin_username=$(VMUSER) -var source_image_id=$(imageId) -var-file="${{ variables.target_tfvars }}"
+        commandOptions: -var resource_group_name=$(RG_NAME) -var admin_username=$(VMUSER) -var source_image_id=$(imageId) -var-file="${{ variables.target_tfvars_path }}${{ parameters.environment }}"
         allowTelemetryCollection: true
         publishPlanResults: 'Terraform Plan'
 
@@ -377,7 +385,7 @@ stages:
         allowTelemetryCollection: false
         workingDirectory: '$(System.DefaultWorkingDirectory)/terraform'
         environmentServiceName: '${{ variables.backend_service_connection_name }}'
-        commandOptions: -var resource_group_name=$(RG_NAME) -var admin_username=$(VMUSER) -var source_image_id=$(imageId) -var-file="${{ variables.target_tfvars }}"
+        commandOptions: -var resource_group_name=$(RG_NAME) -var admin_username=$(VMUSER) -var source_image_id=$(imageId) -var-file="${{ variables.target_tfvars_path }}${{ parameters.environment }}"
     - script: |
            sleep 60 
       displayName: 'Waiting for agent to become online'
