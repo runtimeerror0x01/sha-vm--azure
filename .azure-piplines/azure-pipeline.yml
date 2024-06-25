@@ -64,7 +64,7 @@ stages:
       inputs:
         command: 'plan'
         workingDirectory: '$(System.DefaultWorkingDirectory)/terraform'
-        environmentServiceName: ${{ variables.backend_service_connection_name }}
+        environmentServiceName: ${{ variables.target_service_connection_name }}
         allowTelemetryCollection: false
         commandOptions: '-destroy -out=tfplan.destroy -var-file="${{ variables.target_tfvars }}" -var resource_group_name=$(RG_NAME) -var admin_username=$(VMUSER) -var source_image_id=$(imageId) '
         publishPlanResults: 'Plan-Destroy'
@@ -109,7 +109,7 @@ stages:
       inputs:
         command: 'destroy'
         workingDirectory: '$(System.DefaultWorkingDirectory)/terraform'
-        environmentServiceName: '${{ variables.backend_service_connection_name }}'
+        environmentServiceName: '${{ variables.target_service_connection_name  }}'
         commandOptions: '-var resource_group_name=$(RG_NAME) -var admin_username=$(VMUSER) -var source_image_id=$(imageId) -var-file="${{ variables.target_tfvars }}" -auto-approve'
         allowTelemetryCollection: true
 
@@ -230,7 +230,7 @@ stages:
       displayName: "Tf validate"
       inputs:
         command: 'validate'
-        environmentServiceName: ${{ variables.backend_service_connection_name }}
+        environmentServiceName: ${{ variables.target_service_connection_name  }}
         allowTelemetryCollection: false
   - job: tflint
     displayName: "TF lint scan"
@@ -308,9 +308,10 @@ stages:
     - task: TerraformCLI@0
       displayName: Terraform plan
       inputs:
+       
         command: 'plan'
         workingDirectory: '$(System.DefaultWorkingDirectory)/terraform'
-        environmentServiceName: '${{ variables.backend_service_connection_name }}'
+        environmentServiceName: '${{ variables.target_service_connection_name  }}'
         commandOptions: -var resource_group_name=$(RG_NAME) -var admin_username=$(VMUSER) -var source_image_id=$(imageId) -var-file="${{ variables.target_tfvars }}"
         allowTelemetryCollection: true
         publishPlanResults: 'Terraform Plan'
@@ -376,7 +377,7 @@ stages:
         command: 'apply'
         allowTelemetryCollection: false
         workingDirectory: '$(System.DefaultWorkingDirectory)/terraform'
-        environmentServiceName: '${{ variables.backend_service_connection_name }}'
+        environmentServiceName: '${{ variables.target_service_connection_name  }}'
         commandOptions: -var resource_group_name=$(RG_NAME) -var admin_username=$(VMUSER) -var source_image_id=$(imageId) -var-file="${{ variables.target_tfvars }}"
     - script: |
            sleep 60 
