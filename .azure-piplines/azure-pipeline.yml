@@ -51,16 +51,6 @@ stages:
   jobs:
   - job: 'TF_destroy_plan'
     steps:
-    - task: AzureCLI@2
-      displayName: Deploy Linux Agent ACI
-      inputs:
-        azureSubscription: ${{ variables.backend_service_connection_name }}
-        workingDirectory: ${{ variables.terraform_path }}
-        scriptType: bash
-        scriptLocation: inlineScript
-        inlineScript: |
-          terraform workspace select ${{ parameters.environment }}
-
     - task: TerraformCLI@0
       displayName: Terraform init
       inputs:
@@ -75,8 +65,8 @@ stages:
         backendAzureRmStorageAccountName: ${{ variables.backend_storage_account_name }}
         backendAzureRmContainerName: ${{ variables.backend_storage_container_name }}
         workspaceName: ${{ parameters.environment }}
-
         allowTelemetryCollection: true
+      
     - task: TerraformCLI@0
       displayName: Terraform destroy plan
       inputs:
