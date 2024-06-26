@@ -79,7 +79,7 @@ stages:
     - task: PublishPipelineArtifact@1
       displayName: 'Upload Terraform Destroy Plan'
       inputs:
-        targetPath: ${{ variables.target_tfvars_path }}
+        targetPath: ${{ variables.terraform_path }}
         artifact: 'tf-artifact'
         publishLocation: 'pipeline'
   - job: 'Destroy_Manual_Validation'
@@ -426,10 +426,11 @@ stages:
           if ! command -v ansible &> /dev/null
           then
               sudo apt update
-              sudo apt update
+              sudo apt install software-properties-common -y
+              sudo add-apt-repository --yes --update ppa:ansible/ansible
               sudo apt install python3-pip -y
-
-              sudo -H pip3 install ansible
+              sudo apt install python3 -y
+              sudo apt install ansible -y
               ansible --version
               echo "Ansible installed successfully."
           else
