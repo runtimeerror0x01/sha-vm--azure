@@ -425,6 +425,10 @@ stages:
       - script: |
           if ! command -v ansible &> /dev/null
           then
+              sudo apt update
+              sudo apt update
+              sudo apt install python3-pip -y
+
               sudo -H pip3 install ansible
               ansible --version
               echo "Ansible installed successfully."
