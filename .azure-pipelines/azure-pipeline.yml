@@ -18,7 +18,14 @@ parameters:
   default: true
 - name: Create_Backend_Storage
   type: boolean
-  default: false  
+  default: false
+- name: environment
+  displayName: Environment
+  type: string
+  default: dev
+  values:
+  - dev
+  - prod
 
 variables:
   - group: vmSecrets
@@ -48,7 +55,7 @@ stages:
       displayName: Terraform init
       inputs:
         command: 'init'
-        workingDirectory: '$(System.DefaultWorkingDirectory)/terraform'
+        workingDirectory: ${{ variables.terraform_path }}
         backendType: 'azurerm'
         backendServiceArm: ${{ variables.backend_service_connection_name }}
         backendAzureRmSubscriptionId: ${{ variables.backend_subscription_id }}
@@ -57,21 +64,26 @@ stages:
         backendAzureRmResourceGroupLocation: ${{ variables.backend_resource_group_location }}
         backendAzureRmStorageAccountName: ${{ variables.backend_storage_account_name }}
         backendAzureRmContainerName: ${{ variables.backend_storage_container_name }}
-        backendAzureRmKey: ${{ variables.backend_tfstate_file_name }}
+        workspaceName: ${{ parameters.environment }}
         allowTelemetryCollection: true
+      
     - task: TerraformCLI@0
       displayName: Terraform destroy plan
       inputs:
         command: 'plan'
+<<<<<<< HEAD:.azure-piplines/azure-pipeline.yml
         workingDirectory: '$(System.DefaultWorkingDirectory)/terraform'
+=======
+        workingDirectory: ${{ variables.terraform_path }}
+>>>>>>> feature-workspaces:.azure-pipelines/azure-pipeline.yml
         environmentServiceName: ${{ variables.target_service_connection_name }}
         allowTelemetryCollection: false
-        commandOptions: '-destroy -out=tfplan.destroy -var-file="${{ variables.target_tfvars }}" -var resource_group_name=$(RG_NAME) -var admin_username=$(VMUSER) -var source_image_id=$(imageId) '
+        commandOptions: '-destroy -out=tfplan.destroy -var-file="${{ variables.target_tfvars_path }}${{ parameters.environment }}.tfvars" -var resource_group_name=$(RG_NAME) -var admin_username=$(VMUSER) -var source_image_id=$(imageId) '
         publishPlanResults: 'Plan-Destroy'
     - task: PublishPipelineArtifact@1
       displayName: 'Upload Terraform Destroy Plan'
       inputs:
-        targetPath: '$(System.DefaultWorkingDirectory)/terraform'
+        targetPath: ${{ variables.terraform_path }}
         artifact: 'tf-artifact'
         publishLocation: 'pipeline'
   - job: 'Destroy_Manual_Validation'
@@ -93,7 +105,7 @@ stages:
       displayName: Terraform init
       inputs:
         command: 'init'
-        workingDirectory: '$(System.DefaultWorkingDirectory)/terraform'
+        workingDirectory: ${{variables.terraform_path }}
         backendType: 'azurerm'
         backendServiceArm: ${{ variables.backend_service_connection_name }}
         backendAzureRmSubscriptionId: ${{ variables.backend_subscription_id }}
@@ -102,15 +114,21 @@ stages:
         backendAzureRmResourceGroupLocation: ${{ variables.backend_resource_group_location }}
         backendAzureRmStorageAccountName: ${{ variables.backend_storage_account_name }}
         backendAzureRmContainerName: ${{ variables.backend_storage_container_name }}
-        backendAzureRmKey: ${{ variables.backend_tfstate_file_name }}
+        workspaceName: ${{ parameters.environment }}
         allowTelemetryCollection: true
     - task: TerraformCLI@0
       displayName: Terraform destroy
       inputs:
         command: 'destroy'
+<<<<<<< HEAD:.azure-piplines/azure-pipeline.yml
         workingDirectory: '$(System.DefaultWorkingDirectory)/terraform'
         environmentServiceName: '${{ variables.target_service_connection_name  }}'
         commandOptions: '-var resource_group_name=$(RG_NAME) -var admin_username=$(VMUSER) -var source_image_id=$(imageId) -var-file="${{ variables.target_tfvars }}" -auto-approve'
+=======
+        workingDirectory: ${{variables.terraform_path }}
+        environmentServiceName: '${{ variables.target_service_connection_name  }}'
+        commandOptions: '-var resource_group_name=$(RG_NAME) -var admin_username=$(VMUSER) -var source_image_id=$(imageId) -var-file="${{ variables.target_tfvars_path }}${{ parameters.environment }}.tfvars" -auto-approve'
+>>>>>>> feature-workspaces:.azure-pipelines/azure-pipeline.yml
         allowTelemetryCollection: true
 
 - stage: "Create_Backend_Storage"
@@ -143,7 +161,7 @@ stages:
     - task: AzureCLI@2
       displayName: Validating Packer
       inputs:
-        azureSubscription: myServicePrincipalName1
+        azureSubscription: ${{ variables.backend_service_connection_name }}
         scriptType: bash
         scriptLocation: inlineScript
         inlineScript: |
@@ -173,7 +191,7 @@ stages:
       name: BuildImageC
       displayName: Build Image
       inputs:
-        azureSubscription: myServicePrincipalName1
+        azureSubscription: ${{ variables.backend_service_connection_name }}
         scriptType: pscore
         scriptLocation: inlineScript
         inlineScript: |
@@ -185,7 +203,7 @@ stages:
       name: A
       displayName: 'Set ImageId variable'
       inputs:
-        azureSubscription: 'myServicePrincipalName1'
+        azureSubscription: ${{ variables.target_service_connection_name }}
         scriptType: 'bash'
         scriptLocation: 'inlineScript'
         inlineScript: |
@@ -215,7 +233,7 @@ stages:
       displayName: Terraform init
       inputs:
         command: 'init'
-        workingDirectory: '$(System.DefaultWorkingDirectory)'
+        workingDirectory: ${{ variables.terraform_path }}
         backendType: 'azurerm'
         backendServiceArm: ${{ variables.backend_service_connection_name }}
         backendAzureRmSubscriptionId: ${{ variables.backend_subscription_id }}
@@ -224,7 +242,7 @@ stages:
         backendAzureRmResourceGroupLocation: ${{ variables.backend_resource_group_location }}
         backendAzureRmStorageAccountName: ${{ variables.backend_storage_account_name }}
         backendAzureRmContainerName: ${{ variables.backend_storage_container_name }}
-        backendAzureRmKey: ${{ variables.backend_tfstate_file_name }}
+        backendAzureRmKey: ${{ variables.default_tfstate_file_name }}
         allowTelemetryCollection: true
     - task: TerraformCLI@0
       displayName: "Tf validate"
@@ -240,16 +258,18 @@ stages:
       name: tflint_run
       displayName: 'Initialize and run tflint'
       inputs:
-        workingDirectory: '$(System.DefaultWorkingDirectory)'
+        workingDirectory: ${{ variables.terraform_path }}
         script: |
+          echo "Installing tflint..."
+          curl -s https://raw.githubusercontent.com/terraform-linters/tflint/master/install_linux.sh | bash
           echo -e "\n##[command]Initializing tflint plugins:"
-          tflint --init --config=./pipelines/config_files/.tflint.hcl
-          echo -e "\n##[command]Running tflint --config=./pipelines/config_files/.tflint.hcl --no-color --module --format=default | tee tflint.report.txt:"
-          tflint --config=./pipelines/config_files/.tflint.hcl --no-color --module --format=default | tee tflint.report.txt
+          tflint --init --config=$(System.DefaultWorkingDirectory)/.azure-pipelines/config_files/.tflint.hcl
+          echo -e "\n##[command]Running tflint --config=$(System.DefaultWorkingDirectory)/.azure-pipelines/config_files/.tflint.hcl --no-color --module --format=default | tee tflint.report.txt:"
+          tflint --config=$(System.DefaultWorkingDirectory)/.azure-pipelines/config_files/.tflint.hcl --no-color --module --format=default | tee tflint.report.txt
           echo -e "##[command]Done."
           echo "##vso[task.setvariable variable=publish_tflint;]false"
-          if [[ $(find $(System.DefaultWorkingDirectory)/tflint.report.txt -type f -size +1c 2>/dev/null) ]]; then
-            cp $(System.DefaultWorkingDirectory)/tflint.report.txt $(Build.ArtifactStagingDirectory) >> /dev/null 2>&1
+          if [[ $(find ${{ variables.terraform_path }}/tflint.report.txt -type f -size +1c 2>/dev/null) ]]; then
+            cp ${{ variables.terraform_path }}/tflint.report.txt $(Build.ArtifactStagingDirectory) >> /dev/null 2>&1
             echo -e "\n##[command]Tflint report will be published as there are some findings."
             echo "##vso[task.setvariable variable=publish_tflint;]true"
           else
@@ -265,21 +285,21 @@ stages:
         targetType: inline
         script: |
           sudo docker pull bridgecrew/checkov
-        workingDirectory: $(System.DefaultWorkingDirectory)
+        workingDirectory: ${{ variables.terraform_path }}
     - task: Bash@3
       displayName: "Run > checkov"
       inputs:
         targetType: inline
         script: |
           sudo docker run --volume $(pwd):/tf bridgecrew/checkov --directory /tf --output junitxml --soft-fail > $(pwd)/CheckovReport.xml
-        workingDirectory: $(System.DefaultWorkingDirectory)
+        workingDirectory: ${{ variables.terraform_path }}
     - task: PublishTestResults@2
       inputs:
         testRunTitle: "Checkov Results"
         failTaskOnFailedTests: false
         testResultsFormat: "JUnit"
         testResultsFiles: "CheckovReport.xml"
-        searchFolder: "$(System.DefaultWorkingDirectory)"
+        searchFolder: "${{ variables.terraform_path }}"
       displayName: "Publish > Checkov scan results"
 
 - stage: terraform_plan
@@ -293,7 +313,7 @@ stages:
       displayName: Terraform init
       inputs:
         command: 'init'
-        workingDirectory: '$(System.DefaultWorkingDirectory)/terraform'
+        workingDirectory: ${{ variables.terraform_path }}
         backendType: 'azurerm'
         backendServiceArm: ${{ variables.backend_service_connection_name }}
         backendAzureRmSubscriptionId: ${{ variables.backend_subscription_id }}
@@ -302,7 +322,31 @@ stages:
         backendAzureRmResourceGroupLocation: ${{ variables.backend_resource_group_location }}
         backendAzureRmStorageAccountName: ${{ variables.backend_storage_account_name }}
         backendAzureRmContainerName: ${{ variables.backend_storage_container_name }}
-        backendAzureRmKey: $(backend_tfstate_file_name)
+        backendAzureRmKey: ${{ variables.default_tfstate_file_name }}
+        allowTelemetryCollection: true
+    - task: AzureCLI@2
+      displayName: Create/Select Terraform Workspace
+      inputs:
+        azureSubscription: ${{ variables.backend_service_connection_name }}
+        workingDirectory: ${{ variables.terraform_path }}
+        scriptType: bash
+        scriptLocation: inlineScript
+        inlineScript: |
+          terraform workspace select ${{ parameters.environment }} || terraform workspace new ${{ parameters.environment }}
+    - task: TerraformCLI@0
+      displayName: Terraform init
+      inputs:
+        command: 'init'
+        workingDirectory: ${{ variables.terraform_path }}
+        backendType: 'azurerm'
+        backendServiceArm: ${{ variables.backend_service_connection_name }}
+        backendAzureRmSubscriptionId: ${{ variables.backend_subscription_id }}
+        ensureBackend: true
+        backendAzureRmResourceGroupName: ${{ variables.backend_resource_group_name }}
+        backendAzureRmResourceGroupLocation: ${{ variables.backend_resource_group_location }}
+        backendAzureRmStorageAccountName: ${{ variables.backend_storage_account_name }}
+        backendAzureRmContainerName: ${{ variables.backend_storage_container_name }}
+        workspaceName: ${{ parameters.environment }}
         allowTelemetryCollection: true
 
     - task: TerraformCLI@0
@@ -310,9 +354,15 @@ stages:
       inputs:
        
         command: 'plan'
+<<<<<<< HEAD:.azure-piplines/azure-pipeline.yml
         workingDirectory: '$(System.DefaultWorkingDirectory)/terraform'
         environmentServiceName: '${{ variables.target_service_connection_name  }}'
         commandOptions: -var resource_group_name=$(RG_NAME) -var admin_username=$(VMUSER) -var source_image_id=$(imageId) -var-file="${{ variables.target_tfvars }}"
+=======
+        workingDirectory: ${{ variables.terraform_path }}
+        environmentServiceName: '${{ variables.target_service_connection_name }}'
+        commandOptions: -var resource_group_name=$(RG_NAME) -var admin_username=$(VMUSER) -var source_image_id=$(imageId) -var-file="${{ variables.target_tfvars_path }}${{parameters.environment}}.tfvars"
+>>>>>>> feature-workspaces:.azure-pipelines/azure-pipeline.yml
         allowTelemetryCollection: true
         publishPlanResults: 'Terraform Plan'
 
@@ -320,7 +370,7 @@ stages:
       name: Publish_Terraform_Plan
       displayName: 'Publish terraform plan'
       inputs:
-        targetPath: '$(System.DefaultWorkingDirectory)/terraform'
+        targetPath: ${{ variables.terraform_path }}
         artifactName: 'terraform.tfplan'
         publishLocation: 'pipeline'    
 
@@ -352,14 +402,14 @@ stages:
       name: replacePackerTokens
       displayName: 'Replace tokens in cloud-init.yml'
       inputs:
-        root: '$(System.DefaultWorkingDirectory)/terraform/config'
+        root: '${{ variables.terraform_path }}/config'
         sources: 'cloud-init.yaml'
         tokenPattern: 'doubleunderscores'
     - task: TerraformCLI@0
       displayName: Terraform init
       inputs:
         command: 'init'
-        workingDirectory: '$(System.DefaultWorkingDirectory)/terraform'
+        workingDirectory: ${{ variables.terraform_path }}
         backendType: 'azurerm'
         backendServiceArm: ${{ variables.backend_service_connection_name }}
         backendAzureRmSubscriptionId: ${{ variables.backend_subscription_id }}
@@ -368,7 +418,7 @@ stages:
         backendAzureRmResourceGroupLocation: ${{ variables.backend_resource_group_location }}
         backendAzureRmStorageAccountName: ${{ variables.backend_storage_account_name }}
         backendAzureRmContainerName: ${{ variables.backend_storage_container_name }}
-        backendAzureRmKey: $(backend_tfstate_file_name)
+        workspaceName: ${{ parameters.environment }}
         allowTelemetryCollection: true
 
     - task: TerraformCLI@0
@@ -376,9 +426,15 @@ stages:
       inputs:
         command: 'apply'
         allowTelemetryCollection: false
+<<<<<<< HEAD:.azure-piplines/azure-pipeline.yml
         workingDirectory: '$(System.DefaultWorkingDirectory)/terraform'
         environmentServiceName: '${{ variables.target_service_connection_name  }}'
         commandOptions: -var resource_group_name=$(RG_NAME) -var admin_username=$(VMUSER) -var source_image_id=$(imageId) -var-file="${{ variables.target_tfvars }}"
+=======
+        workingDirectory: ${{ variables.terraform_path }}
+        environmentServiceName: '${{ variables.target_service_connection_name }}'
+        commandOptions: -var resource_group_name=$(RG_NAME) -var admin_username=$(VMUSER) -var source_image_id=$(imageId) -var-file="${{ variables.target_tfvars_path }}${{parameters.environment}}.tfvars"
+>>>>>>> feature-workspaces:.azure-pipelines/azure-pipeline.yml
     - script: |
            sleep 60 
       displayName: 'Waiting for agent to become online'
@@ -392,7 +448,12 @@ stages:
       - script: |
           if ! command -v ansible &> /dev/null
           then
-              sudo -H pip3 install ansible
+              sudo apt update
+              sudo apt install software-properties-common -y
+              sudo add-apt-repository --yes --update ppa:ansible/ansible
+              sudo apt install python3-pip -y
+              sudo apt install python3 -y
+              sudo apt install ansible -y
               ansible --version
               echo "Ansible installed successfully."
           else
