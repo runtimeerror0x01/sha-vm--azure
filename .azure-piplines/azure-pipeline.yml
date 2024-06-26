@@ -74,7 +74,7 @@ stages:
         workingDirectory: ${{ variables.terraform_path }}
         environmentServiceName: ${{ variables.target_service_connection_name }}
         allowTelemetryCollection: false
-        commandOptions: '-destroy -out=tfplan.destroy -var-file="${{ variables.terraform_path }}${{ parameters.environment }}.tfvars" -var resource_group_name=$(RG_NAME) -var admin_username=$(VMUSER) -var source_image_id=$(imageId) '
+        commandOptions: '-destroy -out=tfplan.destroy -var-file="${{ variables.target_tfvars_path }}${{ parameters.environment }}.tfvars" -var resource_group_name=$(RG_NAME) -var admin_username=$(VMUSER) -var source_image_id=$(imageId) '
         publishPlanResults: 'Plan-Destroy'
     - task: PublishPipelineArtifact@1
       displayName: 'Upload Terraform Destroy Plan'
