@@ -69,3 +69,8 @@ variable "custom_data" {
     error_message = "The `custom_data` must be either `null` or a valid Base64-Encoded string."
   }
 }
+
+variable "accelerated_networking_enabled" {
+  type        = bool
+  description = "Size of the VM "
+}

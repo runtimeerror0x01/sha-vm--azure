@@ -35,27 +35,27 @@ build {
    sources = [
       "source.azure-arm.ubuntu-22_4-test",
    ]
-   provisioner "shell" {
-      script = "image/scripts/01_ubuntu_packages.sh"
-   }
-   provisioner "shell" {
-      script = "image/scripts/02_ubuntu_docker.sh"
-   }
-     provisioner "shell" {
-      script = "image/scripts/03_ubuntu_nodejs_yarn_maven_gradle.sh"
-   }
-   provisioner "shell" {
-      script = "image/scripts/04_ubuntu_dotnet_Terraform_Bicep.sh"
-   }
-      provisioner "shell" {
-      script = "image/scripts/05_ubuntu_helm_kubectl.sh"
-   }
-      provisioner "shell" {
-      script = "image/scripts/06_ubuntu_Azcli_azd_pwsh_chrome.sh"
-   }
-         provisioner "shell" {
-      script = "image/scripts/07_ubuntu_googlechrome.sh"
-   }
+   // provisioner "shell" {
+   //    script = "image/scripts/01_ubuntu_packages.sh"
+   // }
+   // provisioner "shell" {
+   //    script = "image/scripts/02_ubuntu_docker.sh"
+   // }
+   //   provisioner "shell" {
+   //    script = "image/scripts/03_ubuntu_nodejs_yarn_maven_gradle.sh"
+   // }
+   // provisioner "shell" {
+   //    script = "image/scripts/04_ubuntu_dotnet_Terraform_Bicep.sh"
+   // }
+   //    provisioner "shell" {
+   //    script = "image/scripts/05_ubuntu_helm_kubectl.sh"
+   // }
+   //    provisioner "shell" {
+   //    script = "image/scripts/06_ubuntu_Azcli_azd_pwsh_chrome.sh"
+   // }
+   //       provisioner "shell" {
+   //    script = "image/scripts/07_ubuntu_googlechrome.sh"
+   // }
    #    provisioner "shell" {
    #    script = "image/scripts/env.sh"
    # }
