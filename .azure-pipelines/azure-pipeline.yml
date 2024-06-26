@@ -71,11 +71,7 @@ stages:
       displayName: Terraform destroy plan
       inputs:
         command: 'plan'
-<<<<<<< HEAD:.azure-piplines/azure-pipeline.yml
-        workingDirectory: '$(System.DefaultWorkingDirectory)/terraform'
-=======
         workingDirectory: ${{ variables.terraform_path }}
->>>>>>> feature-workspaces:.azure-pipelines/azure-pipeline.yml
         environmentServiceName: ${{ variables.target_service_connection_name }}
         allowTelemetryCollection: false
         commandOptions: '-destroy -out=tfplan.destroy -var-file="${{ variables.target_tfvars_path }}${{ parameters.environment }}.tfvars" -var resource_group_name=$(RG_NAME) -var admin_username=$(VMUSER) -var source_image_id=$(imageId) '
@@ -86,6 +82,7 @@ stages:
         targetPath: ${{ variables.terraform_path }}
         artifact: 'tf-artifact'
         publishLocation: 'pipeline'
+        
   - job: 'Destroy_Manual_Validation'
     displayName: 'Wait for External Validation Before Destroy'  
     dependsOn: TF_destroy_plan
@@ -120,15 +117,9 @@ stages:
       displayName: Terraform destroy
       inputs:
         command: 'destroy'
-<<<<<<< HEAD:.azure-piplines/azure-pipeline.yml
-        workingDirectory: '$(System.DefaultWorkingDirectory)/terraform'
-        environmentServiceName: '${{ variables.target_service_connection_name  }}'
-        commandOptions: '-var resource_group_name=$(RG_NAME) -var admin_username=$(VMUSER) -var source_image_id=$(imageId) -var-file="${{ variables.target_tfvars }}" -auto-approve'
-=======
         workingDirectory: ${{variables.terraform_path }}
         environmentServiceName: '${{ variables.target_service_connection_name  }}'
         commandOptions: '-var resource_group_name=$(RG_NAME) -var admin_username=$(VMUSER) -var source_image_id=$(imageId) -var-file="${{ variables.target_tfvars_path }}${{ parameters.environment }}.tfvars" -auto-approve'
->>>>>>> feature-workspaces:.azure-pipelines/azure-pipeline.yml
         allowTelemetryCollection: true
 
 - stage: "Create_Backend_Storage"
@@ -354,15 +345,9 @@ stages:
       inputs:
        
         command: 'plan'
-<<<<<<< HEAD:.azure-piplines/azure-pipeline.yml
-        workingDirectory: '$(System.DefaultWorkingDirectory)/terraform'
-        environmentServiceName: '${{ variables.target_service_connection_name  }}'
-        commandOptions: -var resource_group_name=$(RG_NAME) -var admin_username=$(VMUSER) -var source_image_id=$(imageId) -var-file="${{ variables.target_tfvars }}"
-=======
         workingDirectory: ${{ variables.terraform_path }}
         environmentServiceName: '${{ variables.target_service_connection_name }}'
         commandOptions: -var resource_group_name=$(RG_NAME) -var admin_username=$(VMUSER) -var source_image_id=$(imageId) -var-file="${{ variables.target_tfvars_path }}${{parameters.environment}}.tfvars"
->>>>>>> feature-workspaces:.azure-pipelines/azure-pipeline.yml
         allowTelemetryCollection: true
         publishPlanResults: 'Terraform Plan'
 
@@ -426,15 +411,9 @@ stages:
       inputs:
         command: 'apply'
         allowTelemetryCollection: false
-<<<<<<< HEAD:.azure-piplines/azure-pipeline.yml
-        workingDirectory: '$(System.DefaultWorkingDirectory)/terraform'
-        environmentServiceName: '${{ variables.target_service_connection_name  }}'
-        commandOptions: -var resource_group_name=$(RG_NAME) -var admin_username=$(VMUSER) -var source_image_id=$(imageId) -var-file="${{ variables.target_tfvars }}"
-=======
         workingDirectory: ${{ variables.terraform_path }}
         environmentServiceName: '${{ variables.target_service_connection_name }}'
         commandOptions: -var resource_group_name=$(RG_NAME) -var admin_username=$(VMUSER) -var source_image_id=$(imageId) -var-file="${{ variables.target_tfvars_path }}${{parameters.environment}}.tfvars"
->>>>>>> feature-workspaces:.azure-pipelines/azure-pipeline.yml
     - script: |
            sleep 60 
       displayName: 'Waiting for agent to become online'
