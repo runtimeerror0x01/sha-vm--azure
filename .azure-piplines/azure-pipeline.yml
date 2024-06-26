@@ -59,7 +59,7 @@ stages:
         scriptLocation: inlineScript
         inlineScript: |
           terraform workspace select ${{ parameters.environment }}
-              
+
     - task: TerraformCLI@0
       displayName: Terraform init
       inputs:
