@@ -12,6 +12,6 @@ variables:
   default_tfstate_file_name: vmadogent.tfstate
   target_service_connection_name: myServicePrincipalName1
   target_subscription_id: b9400fd0-5bf2-4045-a52b-67fc2bf96015
-  target_tfvars_path: $(System.DefaultWorkingDirectory)/terraform/
+  target_tfvars_path: $(System.DefaultWorkingDirectory)/terraform/environments
   terraform_path: $(Build.SourcesDirectory)/terraform
   notify_email:   
