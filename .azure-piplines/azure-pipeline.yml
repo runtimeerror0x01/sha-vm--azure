@@ -20,11 +20,12 @@ parameters:
   type: boolean
   default: false
 - name: environment
+  displayName: Environment
   type: string
   default: dev
-  value:
-    - dev
-    - prod
+  values:
+  - dev
+  - prod
 
 variables:
   - group: vmSecrets
