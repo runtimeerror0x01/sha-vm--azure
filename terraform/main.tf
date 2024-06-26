@@ -193,7 +193,7 @@ module "linux_vm" {
   network_interfaces = {
     network_interface_1 = {
       name                           = "${var.vm_name_prefix}-nic"
-      accelerated_networking_enabled = true
+      accelerated_networking_enabled = var.vaccelerated_networking_enabled
       ip_configurations = {
         ip_configuration_1 = {
           name                          = "${var.vm_name_prefix}-nic1-ipconfig1"
