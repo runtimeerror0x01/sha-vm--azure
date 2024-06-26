@@ -70,3 +70,7 @@ variable "custom_data" {
   }
 }
 
+variable "accelerated_networking_enabled" {
+  type        = bool
+  description = "Size of the VM "
+}

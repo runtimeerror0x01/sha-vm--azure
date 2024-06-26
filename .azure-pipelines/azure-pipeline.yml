@@ -281,7 +281,7 @@ stages:
       inputs:
         targetType: inline
         script: |
-          sudo docker run --volume $(pwd):/tf bridgecrew/checkov --directory /tf --output junitxml --soft-fail > $(pwd)/CheckovReport.xml
+          sudo docker run --volume $(pwd):/tf bridgecrew/checkov --directory /tf --output junitxml --soft-fail --download-external-modules > $(pwd)/CheckovReport.xml
         workingDirectory: ${{ variables.terraform_path }}
     - task: PublishTestResults@2
       inputs:
@@ -315,7 +315,7 @@ stages:
         backendAzureRmKey: ${{ variables.default_tfstate_file_name }}
         allowTelemetryCollection: true
     - task: AzureCLI@2
-      displayName: Deploy Linux Agent ACI
+      displayName: Create/Select Terraform Workspace
       inputs:
         azureSubscription: ${{ variables.backend_service_connection_name }}
         workingDirectory: ${{ variables.terraform_path }}
