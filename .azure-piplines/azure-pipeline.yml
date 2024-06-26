@@ -260,6 +260,8 @@ stages:
       inputs:
         workingDirectory: ${{ variables.terraform_path }}
         script: |
+          echo "Installing tflint..."
+          curl -s https://raw.githubusercontent.com/terraform-linters/tflint/master/install_linux.sh | bash
           echo -e "\n##[command]Initializing tflint plugins:"
           tflint --init --config=./.azure-pipelines/config_files/.tflint.hcl
           echo -e "\n##[command]Running tflint --config=./.azure-pipelines/config_files/.tflint.hcl --no-color --module --format=default | tee tflint.report.txt:"
