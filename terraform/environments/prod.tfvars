@@ -10,5 +10,5 @@ ssh_key_name                        = "adminuser-ssh-private-key-prod"
 
 vmSku                               = "Standard_B20ms"
 vm_name_prefix                      = "gitops-uksth-agent-prod"
-accelerated_networking_enabled      = false
+accelerated_networking_enabled      = true
 
