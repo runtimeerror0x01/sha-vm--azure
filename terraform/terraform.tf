@@ -11,17 +11,13 @@ terraform {
     # }
   }
   backend "azurerm" {   
-    resource_group_name   = "rg-TFStates"  # Replace with your resource group name
-    storage_account_name  = "aciadolnxtfstates"  # Replace with your storage account name
-    container_name        = "main"  # Replace with your container name
-    key                   = "vmadogent.tfstate"  # Replace with your desired state file name
+    # resource_group_name   = "rg-TFStates"  // This is being dealt with in the terraform tasks in the pipeline
+    # storage_account_name  = "aciadolnxtfstates"  
+    # container_name        = "main"  
+    # key                   = "vmadogent.tfstate"  
   }
 }
 
-# terraform {
-#   backend "azurerm" {
-#   }
-# }
 
 provider "azurerm" {
   features {
