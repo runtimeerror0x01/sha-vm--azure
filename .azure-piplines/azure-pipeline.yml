@@ -38,9 +38,6 @@ stages:
 - stage: Install_Pipeline_Dependencies
   displayName: 'Install Pipeline Dependencies'
   condition: and(not(failed()), not(canceled()))
-  variables:
-  - name: ROOT_PATH
-    value: '$(System.DefaultWorkingDirectory)'
   jobs: 
   - template: templates/pipeline_dependencies.yaml
 
@@ -101,7 +98,7 @@ stages:
       displayName: Terraform init
       inputs:
         command: 'init'
-        workingDirectory: ${{ variables.target_tfvars_path }}
+        workingDirectory: ${{variables.terraform_path }}
         backendType: 'azurerm'
         backendServiceArm: ${{ variables.backend_service_connection_name }}
         backendAzureRmSubscriptionId: ${{ variables.backend_subscription_id }}
@@ -116,7 +113,7 @@ stages:
       displayName: Terraform destroy
       inputs:
         command: 'destroy'
-        workingDirectory: ${{variables.target_tfvars_path }}
+        workingDirectory: ${{variables.terraform_path }}
         environmentServiceName: '${{ variables.target_service_connection_name  }}'
         commandOptions: '-var resource_group_name=$(RG_NAME) -var admin_username=$(VMUSER) -var source_image_id=$(imageId) -var-file="${{ variables.target_tfvars_path }}${{ parameters.environment }}.tfvars" -auto-approve'
         allowTelemetryCollection: true
@@ -253,9 +250,9 @@ stages:
           echo "Installing tflint..."
           curl -s https://raw.githubusercontent.com/terraform-linters/tflint/master/install_linux.sh | bash
           echo -e "\n##[command]Initializing tflint plugins:"
-          tflint --init --config=./.azure-pipelines/config_files/.tflint.hcl
-          echo -e "\n##[command]Running tflint --config=./.azure-pipelines/config_files/.tflint.hcl --no-color --module --format=default | tee tflint.report.txt:"
-          tflint --config=./.azure-pipelines/config_files/.tflint.hcl --no-color --module --format=default | tee tflint.report.txt
+          tflint --init --config=$(System.DefaultWorkingDirectory)/.azure-pipelines/config_files/.tflint.hcl
+          echo -e "\n##[command]Running tflint --config=$(System.DefaultWorkingDirectory)/.azure-pipelines/config_files/.tflint.hcl --no-color --module --format=default | tee tflint.report.txt:"
+          tflint --config=$(System.DefaultWorkingDirectory)/.azure-pipelines/config_files/.tflint.hcl --no-color --module --format=default | tee tflint.report.txt
           echo -e "##[command]Done."
           echo "##vso[task.setvariable variable=publish_tflint;]false"
           if [[ $(find ${{ variables.terraform_path }}/tflint.report.txt -type f -size +1c 2>/dev/null) ]]; then
