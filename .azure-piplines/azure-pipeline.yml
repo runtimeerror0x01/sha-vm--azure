@@ -38,15 +38,15 @@ stages:
 - stage: Install_Pipeline_Dependencies
   displayName: 'Install Pipeline Dependencies'
   condition: and(not(failed()), not(canceled()))
+  variables:
+  - name: ROOT_PATH
+    value: '$(System.DefaultWorkingDirectory)'
   jobs: 
   - template: templates/pipeline_dependencies.yaml
 
 - stage: terraform_destroy
   dependsOn: Install_Pipeline_Dependencies
   condition: and(not(failed()), not(canceled()), eq('${{ parameters.DESTROY_TF }}', 'true'))
-  variables:
-  - name: ROOT_PATH
-    value: '$(System.DefaultWorkingDirectory)'
   displayName: TF destroy
   jobs:
   - job: 'TF_destroy_plan'
