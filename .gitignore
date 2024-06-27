@@ -8,3 +8,4 @@ crash.log
 .terraform.lock.hcl
 .terraformrc
 terraform.rc
+*.txt
