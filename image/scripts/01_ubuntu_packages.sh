@@ -1,6 +1,8 @@
 #!/bin/bash
 ## Provisioner log file
 logfile=/var/log/provisioner.log
+sudo touch $logfile
+sudo chown $(whoami):$(whoami) $logfile
 ## Function to echo action with time stamp
 log() {
     echo "$(date +'%X %x') $1" | sudo tee -a $logfile
@@ -29,19 +31,22 @@ DEBIAN_FRONTEND=noninteractive sudo apt-get install -y \
         gnupg-agent \
         locales \
         sudo \
-        time \
+        time >> $logfile 2>&1
+DEBIAN_FRONTEND=noninteractive sudo apt-get install -y \
         unzip \
         wget \
         zip \
         jq \
         netcat \
         software-properties-common \
-        build-essential \
+        build-essential >> $logfile 2>&1
+DEBIAN_FRONTEND=noninteractive sudo apt-get install -y \
         python3 \
         python3-pip \
         dnsutils \
         openssl \
-        net-tools \
+        net-tools >> $logfile 2>&1
+DEBIAN_FRONTEND=noninteractive sudo apt-get install -y \
         lld \
         libcurl4 \
         libxss1 \
@@ -64,7 +69,8 @@ DEBIAN_FRONTEND=noninteractive sudo apt-get install -y \
         libssl3 \
         libstdc++6 \
         libunwind8 \
-        zlib1g \
+        zlib1g >> $logfile 2>&1
+DEBIAN_FRONTEND=noninteractive sudo apt-get install -y \
         npm \
         dotnet-sdk-8.0 \
         default-jdk >> $logfile 2>&1     
