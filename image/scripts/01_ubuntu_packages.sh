@@ -5,7 +5,7 @@ sudo touch $logfile
 sudo chown $(whoami):$(whoami) $logfile
 ## Function to echo action with time stamp
 log() {
-    echo "$(date +'%X %x') $1" | sudo tee -a $logfile
+    echo "$(date +'%X %x') $1" | sudo stdbuf -o0 tee -a $logfile //stdbuf to ensure live logs
 }
 
 sudo add-apt-repository universe -y >> $logfile 2>&1
