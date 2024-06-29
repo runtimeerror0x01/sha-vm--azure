@@ -324,21 +324,21 @@ stages:
         scriptLocation: inlineScript
         inlineScript: |
           terraform workspace select ${{ parameters.environment }} || terraform workspace new ${{ parameters.environment }}
-    - task: TerraformCLI@0
-      displayName: Terraform init
-      inputs:
-        command: 'init'
-        workingDirectory: ${{ variables.terraform_path }}
-        backendType: 'azurerm'
-        backendServiceArm: ${{ variables.backend_service_connection_name }}
-        backendAzureRmSubscriptionId: ${{ variables.backend_subscription_id }}
-        ensureBackend: true
-        backendAzureRmResourceGroupName: ${{ variables.backend_resource_group_name }}
-        backendAzureRmResourceGroupLocation: ${{ variables.backend_resource_group_location }}
-        backendAzureRmStorageAccountName: ${{ variables.backend_storage_account_name }}
-        backendAzureRmContainerName: ${{ variables.backend_storage_container_name }}
-        workspaceName: ${{ parameters.environment }}
-        allowTelemetryCollection: true
+    # - task: TerraformCLI@0
+    #   displayName: Terraform init
+    #   inputs:
+    #     command: 'init'
+    #     workingDirectory: ${{ variables.terraform_path }}
+    #     backendType: 'azurerm'
+    #     backendServiceArm: ${{ variables.backend_service_connection_name }}
+    #     backendAzureRmSubscriptionId: ${{ variables.backend_subscription_id }}
+    #     ensureBackend: true
+    #     backendAzureRmResourceGroupName: ${{ variables.backend_resource_group_name }}
+    #     backendAzureRmResourceGroupLocation: ${{ variables.backend_resource_group_location }}
+    #     backendAzureRmStorageAccountName: ${{ variables.backend_storage_account_name }}
+    #     backendAzureRmContainerName: ${{ variables.backend_storage_container_name }}
+    #     workspaceName: ${{ parameters.environment }}
+    #     allowTelemetryCollection: true
 
     - task: TerraformCLI@0
       displayName: Terraform plan
