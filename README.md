@@ -71,7 +71,7 @@ Please add the credentials of the Service Principal which will be used to deploy
 
 ## Azure Verified Module
 
-This repository uses an Azure Verified module to provision the resources. You can find the child module referenced by the root module in the `terraform` folder. Additional configuration can be added to the root module by referencing the appropriate keys present in the child module.
+This repository uses an Azure Verified module to provision the resources. You can find the child module following the link below, referenced by the root module in the `terraform` folder. Additional configuration can be added to the root module by referencing the appropriate keys present in the child module.
 
 ### Child Module Reference
 [Azure Verified Module - Compute Virtual Machine](https://github.com/Azure/terraform-azurerm-avm-res-compute-virtualmachine/blob/main/main.linux_vm.tf)
