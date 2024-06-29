@@ -44,6 +44,12 @@ data "azurerm_subnet" "spoke_subnet" {
   virtual_network_name = data.azurerm_virtual_network.spoke_vnet.name
 }
 
+data "azurerm_subnet" "bastion_subnet" {
+  name                 = "AzureBastionSubnet"
+  resource_group_name  = var.virtual_network_rg
+  virtual_network_name = data.azurerm_virtual_network.spoke_vnet.name
+}
+
 data "local_file" "cloud_init" {
   filename = "${path.module}/config/cloud-init.yaml"
 }

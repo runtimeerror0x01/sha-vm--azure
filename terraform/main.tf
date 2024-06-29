@@ -1,32 +1,32 @@
-/* Uncomment this section if you would like to include a bastion resource with new subnet.
+# /* Uncomment this section if you would like to include a bastion resource with new subnet.
 
-resource "azurerm_subnet" "bastion_subnet" {
-  name                 = "AzureBastionSubnet"
-  resource_group_name  = 
-  virtual_network_name = 
-  address_prefixes     = [""]
-}
+# resource "azurerm_subnet" "bastion_subnet" {
+#   name                 = "AzureBastionSubnet"
+#   resource_group_name  = 
+#   virtual_network_name = 
+#   address_prefixes     = [""]
+# }
 
 resource "azurerm_public_ip" "bastionpip" {
-  name                = 
-  location            = 
-  resource_group_name = 
+  name                = "my-pip"
+  location            = data.azurerm_resource_group.agent_rg.location
+  resource_group_name = data.azurerm_resource_group.agent_rg.name
   allocation_method   = "Static"
   sku                 = "Standard"
 }
 
 resource "azurerm_bastion_host" "bastion" {
-  name                = 
-  location            = 
-  resource_group_name = 
+  name                = "my-bastion"
+  location            = data.azurerm_resource_group.agent_rg.location
+  resource_group_name = data.azurerm_resource_group.agent_rg.name
 
   ip_configuration {
-    name                 = 
-    subnet_id            = 
-    public_ip_address_id = 
+    name                 = "pip-config"
+    subnet_id            = data.azurerm_subnet.bastion_subnet.id
+    public_ip_address_id = azurerm_bastion_host.bastion.public_ip_address_id
   }
 }
-*/
+# */
 
 resource "azurerm_user_assigned_identity" "identity" {
   location            = data.azurerm_resource_group.agent_rg.location
