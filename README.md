@@ -45,7 +45,14 @@ ssh_key_name                        = "[Your SSH Key Name]"
 
 vmSku                               = "[Your VM SKU]"
 vm_name_prefix                      = "[Your VM Name Prefix]"
-accelerated_networking_enabled      = [true/false]
+accelerated_networking_enabled      =  [true/false]
+
+### terraform.tf
+
+resource_group_name   = "[Backend Resource Group Name]"  
+storage_account_name  = "[Backend Storage Account Name]"
+container_name        = "[Backend Container Nmae]"
+key                   = "[Backend Statefile name]" Default Environment
 
 ## Variable Group Configuration
 
