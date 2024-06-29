@@ -10,12 +10,17 @@ terraform {
     #   version = "~> 3.5"
     # }
   }
-
+  backend "azurerm" {   
+    resource_group_name   = "rg-TFStates"  # Replace with your resource group name
+    storage_account_name  = "aciadolnxtfstates"  # Replace with your storage account name
+    container_name        = "main"  # Replace with your container name
+    key                   = "vmadogent.tfstate"  # Replace with your desired state file name
+  }
 }
 
-terraform {
-  backend "azurerm" {}
-}
+# terraform {
+#   backend "azurerm" {}
+# }
 
 
 provider "azurerm" {
@@ -24,5 +29,5 @@ provider "azurerm" {
       prevent_deletion_if_contains_resources = false # This is to handle MCAPS or other policy driven resource creation.
     }
   }
-  # storage_use_azuread = true
+  storage_use_azuread = true
 }
