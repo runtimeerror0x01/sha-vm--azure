@@ -1,4 +1,4 @@
-# /* Uncomment this section if you would like to include a bastion resource with new subnet.
+ /* Uncomment this section if you would like to include a bastion resource with new subnet.
 
 # resource "azurerm_subnet" "bastion_subnet" {
 #   name                 = "AzureBastionSubnet"
@@ -26,7 +26,7 @@ resource "azurerm_bastion_host" "bastion" {
     public_ip_address_id = azurerm_public_ip.bastionpip.id
   }
 }
-# */
+ */
 
 resource "azurerm_user_assigned_identity" "identity" {
   location            = data.azurerm_resource_group.agent_rg.location
