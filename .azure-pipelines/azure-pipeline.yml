@@ -343,9 +343,9 @@ stages:
     - task: TerraformCLI@0
       displayName: Terraform plan
       inputs:
-       
         command: 'plan'
-        workingDirectory: ${{ variables.terraform_path }}
+        # workingDirectory: ${{ variables.terraform_path }}
+        workspaceName: ${{ parameters.environment }}
         environmentServiceName: '${{ variables.target_service_connection_name }}'
         commandOptions: -var resource_group_name=$(RG_NAME) -var admin_username=$(VMUSER) -var source_image_id=$(imageId) -var-file="${{ variables.target_tfvars_path }}${{parameters.environment}}.tfvars"
         allowTelemetryCollection: true

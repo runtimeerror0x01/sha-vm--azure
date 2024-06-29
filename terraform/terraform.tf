@@ -10,12 +10,11 @@ terraform {
     #   version = "~> 3.5"
     # }
   }
-  backend "azurerm" {   
-    # resource_group_name   = "rg-TFStates"  // This is being dealt with in the terraform tasks in the pipeline
-    # storage_account_name  = "aciadolnxtfstates"  
-    # container_name        = "main"  
-    # key                   = "vmadogent.tfstate"  
-  }
+
+}
+
+terraform {
+  backend "azurerm" {}
 }
 
 
