@@ -282,7 +282,7 @@ stages:
       inputs:
         targetType: inline
         script: |
-          sudo docker run --volume $(pwd):/tf bridgecrew/checkov --directory /tf --output junitxml --soft-fail > $(pwd)/CheckovReport.xml
+          sudo docker run --volume $(pwd):/tf bridgecrew/checkov --directory /tf --output junitxml --soft-fail --download-external-modules > $(pwd)/CheckovReport.xml
         workingDirectory: ${{ variables.terraform_path }}
     - task: PublishTestResults@2
       inputs:
