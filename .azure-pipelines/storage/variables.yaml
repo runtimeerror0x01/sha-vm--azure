@@ -1,6 +1,6 @@
 variables:
   backend_service_connection_name: myServicePrincipalName1
-  backend_container_name: main
+  # backend_container_name: main
   backend_subscription_name: Visual Studio Enterprise Subscription - MPN
   backend_subscription_id: b9400fd0-5bf2-4045-a52b-67fc2bf96015 ## backendAzureRmSubscriptionId
   backend_resource_group_name: rg-TFStates ## backendAzureRmResourceGroupName
