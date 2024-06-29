@@ -53,7 +53,10 @@ Add the following key/value pairs to the Variable group named "vmSecrets":
 
 ### vmSecrets Variable Group
 
-- `PAT Token`: [Your PAT Token]
+- `AZP_TOKEN`: [Your PAT Token]
+- `AZP_URL`: [Your Organization Name]
+- `AZP_POOL`: [Your Agent Pool Name]
+- `AZP_AGENT_NAME`: [Your desired Agent Name]
 - `VMUSER`: [Virtual Machine Username]
 - `DevopsProjectName`: [The Azure DevOps Project Name where the code resides]
 - `IMAGE_NAME`: [Your Desired Name of the Custom Image]
